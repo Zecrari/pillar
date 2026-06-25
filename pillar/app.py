@@ -254,6 +254,8 @@ class Pillar:
                 return self._trace_list_response(scope)
             if path.startswith("/trace/") and len(path) > 7:
                 return self._trace_detail_response(path[7:], scope)
+            if path in ("/ai/manifest.json", "/ai/manifest.anthropic.json"):
+                return self._ai_manifest_response(path, scope)
             if cfg.docs.enabled:
                 if path == cfg.docs.openapi_url:
                     return self._openapi_json_response()
@@ -457,6 +459,13 @@ class Pillar:
             if name.lower() == b"accept" and b"application/json" in value:
                 return True
         return False
+
+    def _ai_manifest_response(self, path: str, scope: dict) -> JSONResponse:
+        from .ai_tools import manifest
+        qs = scope.get("query_string", b"").decode()
+        if "format=anthropic" in qs or path.endswith(".anthropic.json"):
+            return JSONResponse(manifest("anthropic"))
+        return JSONResponse(manifest("openai"))
 
     def _guide_html(self) -> str:
         from .openapi import guide_html

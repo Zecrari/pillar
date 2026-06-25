@@ -34,6 +34,11 @@ from .security import JWTMiddleware, encode_jwt, decode_jwt, RequireAuth
 from .telemetry import setup_telemetry, trace_span, TelemetryMiddleware
 from .tracer import span_context, current_trace_id, record_span
 from .db.rls import RLSDatabase, set_tenant, get_tenant
+from .db.async_db import AsyncDatabase
+from .auth import require_role, require_permission, require_all_roles
+from .ai_tools import ai_tool, manifest as ai_manifest
+from .realtime import hub, PillarHub
+from .admin import admin, PillarAdmin
 
 __version__ = "0.1.0"
 
@@ -87,6 +92,21 @@ __all__ = [
     "RLSDatabase",
     "set_tenant",
     "get_tenant",
+    # Async DB
+    "AsyncDatabase",
+    # RBAC
+    "require_role",
+    "require_permission",
+    "require_all_roles",
+    # AI tool registry
+    "ai_tool",
+    "ai_manifest",
+    # Real-time hub
+    "hub",
+    "PillarHub",
+    # Admin
+    "admin",
+    "PillarAdmin",
     # Version
     "__version__",
 ]

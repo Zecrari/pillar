@@ -269,6 +269,13 @@ async def invoke_handler(
         elif param.default is not inspect.Parameter.empty:
             kwargs[name] = param.default
 
+    # RBAC check — raises ForbiddenError / UnauthorizedError before any work
+    try:
+        from .auth import check_auth
+        check_auth(handler, request.scope)
+    except Exception:
+        raise
+
     # Smart Bridge
     if inspect.iscoroutinefunction(handler):
         result = await handler(**kwargs)

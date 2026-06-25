@@ -38,6 +38,12 @@ dev = [
     "httpx>=0.27",
     "maturin>=1.0",
 ]
+async = [
+    "aiosqlite>=0.19",
+]
+realtime = [
+    "redis>=5.0",
+]
 otel = [
     "opentelemetry-sdk>=1.20",
     "opentelemetry-exporter-otlp>=1.20",
@@ -62,7 +68,7 @@ redis = [
     "redis>=5.0",
 ]
 all = [
-    "pillar-framework[otel,ai,jwt,qdrant]",
+    "pillar-framework[otel,ai,jwt,qdrant,async,realtime]",
     "httpx>=0.27",
 ]
 
