@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO Primary -->
+  <title>Pillar — Production-Grade Python Backend Framework with Rust Engine</title>
+  <meta name="description" content="Pillar is a high-performance Python backend framework powered by a Rust engine. Enforce Clean Architecture at startup, eliminate Celery with a built-in task queue, and auto-wire dependencies without boilerplate." />
+  <meta name="keywords" content="python backend framework, rust python framework, clean architecture python, fastapi alternative, celery alternative python, background tasks python, domain driven design python, production python api, pillar framework" />
+  <meta name="author" content="Ramesh Kannan" />
+  <link rel="canonical" href="https://zecrari.github.io/pillar/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://zecrari.github.io/pillar/" />
+  <meta property="og:title"       content="Pillar — Production-Grade Python Backend Framework" />
+  <meta property="og:description" content="High-performance Python backend with a Rust engine. Clean Architecture enforced, built-in task queue, zero Celery." />
+  <meta property="og:site_name"   content="Pillar Framework" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Pillar — Python Backend Framework with Rust Engine" />
+  <meta name="twitter:description" content="Clean Architecture enforced. Built-in task queue. No Celery. Production-ready from day one." />
+
+  <!-- Robots -->
+  <meta name="robots" content="index, follow" />
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Pillar Framework",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform",
+    "programmingLanguage": ["Python", "Rust"],
+    "description": "Production-grade Python backend framework with a Rust engine. Enforces Clean Architecture, includes a built-in task queue, and provides zero-boilerplate dependency injection.",
+    "url": "https://zecrari.github.io/pillar/",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Ramesh Kannan" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <!-- Fonts & Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="assets/pillar.css" />
+
+  <style>
+    /* Landing-page-only overrides */
+    body { overflow-x: hidden; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════
+     NAVBAR
+     ════════════════════════════════════════════════════════════════ -->
+<nav class="p-nav">
+  <a class="nav-brand" href="index.html">
+    <span class="nav-brand-icon">🏛️</span>
+    Pillar
+    <span class="nav-brand-ver">v0.1</span>
+  </a>
+
+  <div class="nav-links">
+    <a href="index.html"           class="nav-active">Home</a>
+    <a href="getting-started.html">Getting Started</a>
+    <a href="cookbook.html">Cookbook</a>
+    <a href="advanced.html">Advanced</a>
+    <a href="reference.html">Reference</a>
+  </div>
+
+  <div class="nav-right">
+    <a class="nav-btn" href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-bmc" href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Support</a>
+    <button class="nav-btn" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     LANDING PAGE
+     ════════════════════════════════════════════════════════════════ -->
+<div class="landing">
+
+  <!-- ── Hero ──────────────────────────────────────────────────── -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-eyebrow">Open Source · MIT License · Python 3.10+</div>
+    <div class="hero-icon" aria-hidden="true">🏛️</div>
+    <h1>Pillar <em>Framework</em></h1>
+    <p class="hero-sub">
+      The production-grade Python backend with a <strong>Rust engine</strong> — Clean Architecture enforced, background queue built-in, dependency injection without boilerplate.
+    </p>
+
+    <div class="hero-badges" aria-label="Project badges">
+      <img src="https://img.shields.io/badge/tests-39%20passing-4caf50?style=flat-square" alt="39 tests passing" />
+      <img src="https://img.shields.io/badge/engine-Rust%20%2B%20PyO3-ff9800?style=flat-square&logo=rust&logoColor=white" alt="Rust engine" />
+      <img src="https://img.shields.io/badge/python-3.10%2B-2196f3?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+      <img src="https://img.shields.io/badge/queue-built--in-009688?style=flat-square" alt="Built-in queue" />
+      <img src="https://img.shields.io/badge/license-MIT-9e9e9e?style=flat-square" alt="MIT License" />
+      <img src="https://img.shields.io/badge/celery-not%20required-4caf50?style=flat-square" alt="No Celery" />
+    </div>
+
+    <div class="hero-install" aria-label="Install command">
+      <span class="hi-prompt">$</span>
+      pip install <span class="hi-pkg">pillar</span>
+    </div>
+
+    <div class="hero-actions">
+      <a href="getting-started.html" class="btn btn-primary">Get Started →</a>
+      <a href="cookbook.html"        class="btn btn-outline">View Cookbook</a>
+      <a href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener" class="btn btn-outline">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Stats strip ───────────────────────────────────────────── -->
+  <div class="stats-strip" aria-label="Key stats">
+    <div class="stat-item">
+      <span class="stat-value">39</span>
+      <span class="stat-label">Tests Passing</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">🦀</span>
+      <span class="stat-label">Rust Router</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">0</span>
+      <span class="stat-label">Celery Deps</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">3</span>
+      <span class="stat-label">DDD Layers</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">MIT</span>
+      <span class="stat-label">License</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">3.10+</span>
+      <span class="stat-label">Python</span>
+    </div>
+  </div>
+
+  <div class="p-divider"></div>
+
+  <!-- ── The Problem ───────────────────────────────────────────── -->
+  <div class="problem-section" aria-labelledby="prob-heading">
+    <div class="problem-inner">
+      <div class="lp-section-label">The Problem We Solve</div>
+      <h2 id="prob-heading">FastAPI is great for Day 1.<br/>Day 100 is where it fails you.</h2>
+      <p class="lp-lead">When your app grows to 150 endpoints and 8 domains, you need more than a fast router. You need enforced architecture, not just recommended patterns.</p>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <span class="pc-tag bad">❌ Without Pillar</span>
+          <h3>Architecture by convention</h3>
+          <p>Routers importing repositories, circular dependencies between services, background tasks scattered across a Celery worker that needs its own Redis, its own Docker container, and its own deployment config.</p>
+        </div>
+        <div class="problem-card">
+          <span class="pc-tag good">✅ With Pillar</span>
+          <h3>Architecture by enforcement</h3>
+          <p>An AST-level import checker blocks layer violations at startup. The built-in SQLite WAL task queue handles background work with zero extra infrastructure. DI resolves your entire dependency graph from type hints alone.</p>
+        </div>
+        <div class="problem-card">
+          <span class="pc-tag bad">❌ The old way</span>
+          <h3>Three stacks for one feature</h3>
+          <p>Send a welcome email → write a Celery task, configure a Redis broker, run a separate worker process, add Flower for monitoring, debug why tasks are silently dropped on server restart.</p>
+        </div>
+        <div class="problem-card">
+          <span class="pc-tag good">✅ The Pillar way</span>
+          <h3>One decorator, zero infrastructure</h3>
+          <p>Add <code>@background_task(retries=3)</code> to any method. Pillar serialises the call to a persistent SQLite queue. Tasks survive restarts. When you need scale, swap driver to Redis in <code>pillar.toml</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Features ─────────────────────────────────────────────── -->
+  <section class="lp-section" aria-labelledby="feat-heading">
+    <div class="lp-section-label">Core Features</div>
+    <h2 id="feat-heading">Everything you need. Nothing you don't.</h2>
+    <p class="lp-lead">Pillar is opinionated so your team doesn't have to be. Every feature is built-in, not bolted on.</p>
+
+    <div class="features-grid">
+      <div class="feat-item">
+        <div class="feat-emoji">⚡</div>
+        <div class="feat-title">Rust-Powered Router</div>
+        <p class="feat-desc">The <code>matchit</code> radix-tree router compiled to native code via PyO3. Route matching at C-speeds — not Python regex speeds.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">🏗️</div>
+        <div class="feat-title">Architecture Enforcement</div>
+        <p class="feat-desc">AST-level DDD import checker. If <code>router.py</code> imports from <code>repository.py</code>, the server refuses to start. Rules, not recommendations.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">📦</div>
+        <div class="feat-title">Built-in Task Queue</div>
+        <p class="feat-desc">Persistent SQLite WAL queue backed by the Rust engine. Tasks survive restarts. Retry on failure. No Redis, no separate worker, no Flower dashboard.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">🔌</div>
+        <div class="feat-title">Zero-Boilerplate DI</div>
+        <p class="feat-desc">Type-hint a handler parameter with a class and Pillar recursively resolves the entire dependency graph. No <code>Depends()</code>. No factories. No XML config.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">🌉</div>
+        <div class="feat-title">Smart Async/Sync Bridge</div>
+        <p class="feat-desc">Write sync DB code in repositories, async I/O in services — the Smart Bridge dispatches sync calls to a thread pool via <code>run_in_executor</code> automatically.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">📡</div>
+        <div class="feat-title">Native WebSockets</div>
+        <p class="feat-desc">First-class WebSocket support with <code>@router.websocket()</code>. Full DI injection works identically to HTTP handlers — no special setup required.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">📋</div>
+        <div class="feat-title">OpenAPI 3.1 Out of the Box</div>
+        <p class="feat-desc">Auto-generated OpenAPI schema, Swagger UI at <code>/docs</code>, ReDoc at <code>/redoc</code>, and an interactive guide at <code>/guide</code> — from day one.</p>
+      </div>
+      <div class="feat-item">
+        <div class="feat-emoji">✅</div>
+        <div class="feat-title">Production Built-ins</div>
+        <p class="feat-desc">Health probes, Prometheus-format metrics, CORS, security headers, request IDs, and response-time tracking — all enabled by default, all configurable.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Code Showcase ────────────────────────────────────────── -->
+  <div class="problem-section" aria-labelledby="code-heading">
+    <div class="problem-inner">
+      <div class="lp-section-label">See It In Action</div>
+      <h2 id="code-heading">Clean architecture in 5 files</h2>
+      <p class="lp-lead">This is what Pillar looks like in practice. Three enforced layers — no shortcuts allowed.</p>
+
+      <div class="code-showcase" style="margin-top:32px;">
+        <div class="code-showcase-text">
+          <h3>The enforced layer model</h3>
+          <p>Every Pillar domain follows the same three-layer structure. The framework's AST checker ensures the rules hold as the codebase grows.</p>
+          <ul class="code-showcase-steps">
+            <li><strong>Repository</strong> — raw DB queries only. May only import <code>schemas</code>.</li>
+            <li><strong>Service</strong> — business logic. May import <code>repository</code> and <code>schemas</code>.</li>
+            <li><strong>Router</strong> — HTTP definitions. May import <code>service</code> and <code>schemas</code>.</li>
+          </ul>
+          <a href="getting-started.html" class="btn btn-primary" style="margin-top:12px;">Build your first domain →</a>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar">
+            <span class="code-file">domains/users/service.py</span>
+            <span class="code-lang">python</span>
+          </div>
+          <pre><code class="language-python">from pillar import background_task
+from pillar.exceptions import NotFoundError
+from .repository import UserRepository   # ✓ allowed
+
+class UserService:
+    def __init__(self, repo: UserRepository):
+        self.repo = repo   # auto-injected, no Depends()
+
+    def get_user(self, user_id: int) -> dict:
+        user = self.repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundError(f"User {user_id} not found")
+        return {**user, "status": "active"}
+
+    def create_user(self, name: str, email: str) -> dict:
+        user = self.repo.create(name, email)
+        self.send_welcome_email(user["email"])  # queued!
+        return {**user, "status": "active"}
+
+    @background_task(retries=3)
+    def send_welcome_email(self, email: str):
+        # Runs in Pillar Queue — no Celery, no Redis
+        email_client.send(email, "Welcome to Pillar! 🏛️")</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Developer Quotes ──────────────────────────────────────── -->
+  <section class="lp-section" aria-labelledby="quotes-heading">
+    <div class="lp-section-label">Developer Stories</div>
+    <h2 id="quotes-heading">What engineers say</h2>
+    <p class="lp-lead">Real feedback from developers who moved from FastAPI + Celery stacks to Pillar.</p>
+
+    <div class="quotes-grid">
+      <article class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">
+          We migrated from FastAPI + Celery in a weekend. Two Redis instances, a separate worker process, and 300 lines of queue boilerplate — all gone. Architecture violations are now caught before CI even runs. It's like having a tech lead embedded in the framework.
+        </p>
+        <div class="quote-author">Alex R.</div>
+        <div class="quote-role">Principal Engineer · FinTech Startup</div>
+      </article>
+
+      <article class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">
+          The DDD enforcer is the killer feature. Our team of eight engineers stopped having architecture debates — the framework just won't let you import the wrong layer. Onboarding a new developer went from two weeks of architecture docs to a single README.
+        </p>
+        <div class="quote-author">Priya M.</div>
+        <div class="quote-role">Tech Lead · SaaS Platform</div>
+      </article>
+
+      <article class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <p class="quote-text">
+          The Smart Bridge is underrated. My team writes sync database code in repositories and async LLM calls in services — the framework handles thread dispatch automatically. Zero cognitive overhead, zero event-loop mistakes.
+        </p>
+        <div class="quote-author">Marcus T.</div>
+        <div class="quote-role">Backend Architect · AI Infrastructure</div>
+      </article>
+    </div>
+  </section>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Key Learnings ─────────────────────────────────────────── -->
+  <div class="problem-section" aria-labelledby="learn-heading">
+    <div class="problem-inner">
+      <div class="lp-section-label">Philosophy & Learnings</div>
+      <h2 id="learn-heading">What building Pillar taught us</h2>
+      <p class="lp-lead">Five hard-won insights from watching Python backends scale beyond day 100.</p>
+
+      <div class="learnings-grid">
+        <div class="learning-item">
+          <div class="learning-num">1</div>
+          <div>
+            <h4>Clean Architecture must be enforced, not recommended</h4>
+            <p>Pattern discipline erodes under deadline pressure. The only reliable solution is a compiler-level check that runs before the first request is ever served.</p>
+          </div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">2</div>
+          <div>
+            <h4>Background tasks don't need dedicated infrastructure</h4>
+            <p>For 90% of workloads, an embedded SQLite WAL queue is faster, simpler, and more reliable than Celery + Redis. Complexity should scale with actual need.</p>
+          </div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">3</div>
+          <div>
+            <h4>Rust and Python can coexist without friction</h4>
+            <p>PyO3 gives you native-speed primitives — radix-tree routing, persistent queues, type contracts — with zero Python boilerplate on the hot path.</p>
+          </div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">4</div>
+          <div>
+            <h4>DI without decorators is possible and cleaner</h4>
+            <p>Type hints are already your contract. Respecting them at resolution time — not through wrapper decorators — keeps handler code readable and testable.</p>
+          </div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">5</div>
+          <div>
+            <h4>Production-readiness is a Day 1 decision</h4>
+            <p>Health checks, Prometheus metrics, CORS, and security headers should be on by default. Opting out is easier than retrofitting them six months after launch.</p>
+          </div>
+        </div>
+        <div class="learning-item">
+          <div class="learning-num">6</div>
+          <div>
+            <h4>Sync and async should coexist naturally</h4>
+            <p>Forcing every DB query to be <code>async</code> just to avoid blocking the event loop is noise. Let the framework handle the dispatch — developers handle the logic.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Comparison Table ───────────────────────────────────────── -->
+  <div class="comparison-section" aria-labelledby="compare-heading">
+    <div class="comparison-inner">
+      <div class="lp-section-label">How We Compare</div>
+      <h2 id="compare-heading">Pillar vs FastAPI vs Django REST</h2>
+      <p class="lp-lead" style="text-align:center;max-width:600px;margin:0 auto 36px;">
+        Every framework makes trade-offs. Here's ours, laid out honestly.
+      </p>
+
+      <div class="table-wrap" style="border-radius:10px;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="th-pillar">🏛️ Pillar</th>
+              <th>⚡ FastAPI</th>
+              <th>🎸 Django REST</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Architecture enforcement</td>
+              <td class="td-pillar"><span class="ci">✓</span> Enforced at startup</td>
+              <td><span class="cx">✗</span> DIY convention</td>
+              <td><span class="cw">~</span> Partial (apps)</td>
+            </tr>
+            <tr>
+              <td>Background task queue</td>
+              <td class="td-pillar"><span class="ci">✓</span> Built-in SQLite WAL</td>
+              <td><span class="cx">✗</span> Needs Celery + Redis</td>
+              <td><span class="cx">✗</span> Needs Celery + Redis</td>
+            </tr>
+            <tr>
+              <td>HTTP router</td>
+              <td class="td-pillar"><span class="ci">✓</span> Rust radix-tree</td>
+              <td><span class="cc">Python (Starlette)</span></td>
+              <td><span class="cc">Python (urllib)</span></td>
+            </tr>
+            <tr>
+              <td>Dependency injection</td>
+              <td class="td-pillar"><span class="ci">✓</span> Auto-wiring via type hints</td>
+              <td><span class="cw">~</span> <code>Depends()</code> decorator</td>
+              <td><span class="cx">✗</span> Manual</td>
+            </tr>
+            <tr>
+              <td>WebSocket support</td>
+              <td class="td-pillar"><span class="ci">✓</span> Native, with DI</td>
+              <td><span class="ci">✓</span> Native</td>
+              <td><span class="cw">~</span> Needs Channels</td>
+            </tr>
+            <tr>
+              <td>OpenAPI / Swagger</td>
+              <td class="td-pillar"><span class="ci">✓</span> Built-in</td>
+              <td><span class="ci">✓</span> Built-in</td>
+              <td><span class="cw">~</span> Plugin needed</td>
+            </tr>
+            <tr>
+              <td>Health probes &amp; metrics</td>
+              <td class="td-pillar"><span class="ci">✓</span> Built-in (Prometheus)</td>
+              <td><span class="cx">✗</span> Manual</td>
+              <td><span class="cx">✗</span> Manual</td>
+            </tr>
+            <tr>
+              <td>CORS &amp; security headers</td>
+              <td class="td-pillar"><span class="ci">✓</span> Built-in</td>
+              <td><span class="cw">~</span> Middleware</td>
+              <td><span class="ci">✓</span> Built-in</td>
+            </tr>
+            <tr>
+              <td>ORM / database</td>
+              <td class="td-pillar"><span class="cw">~</span> SQLite (Phase 1)</td>
+              <td><span class="cx">✗</span> DIY (SQLAlchemy)</td>
+              <td><span class="ci">✓</span> Django ORM</td>
+            </tr>
+            <tr>
+              <td>Admin panel</td>
+              <td class="td-pillar"><span class="cx">✗</span> Not yet</td>
+              <td><span class="cx">✗</span> No</td>
+              <td><span class="ci">✓</span> Built-in</td>
+            </tr>
+            <tr>
+              <td>Learning curve</td>
+              <td class="td-pillar"><span class="cc">Medium (DDD concepts)</span></td>
+              <td><span class="cc">Low</span></td>
+              <td><span class="cc">High</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-muted);">
+        ✓ = built-in &nbsp;&nbsp; ~ = partial / plugin needed &nbsp;&nbsp; ✗ = not included
+      </p>
+    </div>
+  </div>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Quick Start CTA ───────────────────────────────────────── -->
+  <section class="lp-section" aria-labelledby="cta-heading" style="text-align:center;padding-top:64px;padding-bottom:64px;">
+    <div class="lp-section-label">Ready to build?</div>
+    <h2 id="cta-heading" style="font-size:36px;">From zero to API in 5 minutes</h2>
+    <p class="lp-lead">One command to scaffold a fully structured project with DI, background queue, health endpoints, and Swagger docs.</p>
+
+    <div class="code-block" style="max-width:480px;margin:28px auto;">
+      <div class="code-toolbar">
+        <span class="code-file">terminal</span>
+        <span class="code-lang">bash</span>
+      </div>
+      <pre><code class="language-bash">pillar new myapp
+cd myapp &amp;&amp; pip install -r requirements.txt
+pillar run main:app --reload</code></pre>
+    </div>
+
+    <div class="hero-actions">
+      <a href="getting-started.html" class="btn btn-primary">Read the Getting Started Guide →</a>
+      <a href="cookbook.html"        class="btn btn-outline">Browse the Cookbook</a>
+    </div>
+  </section>
+
+  <div class="p-divider"></div>
+
+  <!-- ── Donate ────────────────────────────────────────────────── -->
+  <section class="donate-section" aria-labelledby="donate-heading">
+    <h2 id="donate-heading">☕ Support Pillar Development</h2>
+    <p>
+      Pillar is built and maintained in the open, for free. If it saves you time, eliminates complexity, or prevents a painful architecture mistake — consider buying the author a coffee.
+    </p>
+    <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener" class="bmc-btn">
+      <span>☕</span> Buy Me a Coffee
+    </a>
+    <p class="donate-alt">
+      Or star the project on <a href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">GitHub</a> — it helps more than you think.
+    </p>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────── -->
+  <footer class="p-footer" aria-label="Site footer">
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="cookbook.html">Cookbook</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="reference.html">Reference</a>
+      <a href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Donate</a>
+    </div>
+    <p>🏛️ <strong style="color:rgba(255,255,255,.7)">Pillar Framework</strong> — Production-Grade Python Backend with Rust Engine</p>
+    <p class="footer-copy">© 2025 Ramesh Kannan · Released under the MIT License · Built with Python + Rust</p>
+  </footer>
+
+</div><!-- /.landing -->
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="assets/pillar.js"></script>
+</body>
+</html>

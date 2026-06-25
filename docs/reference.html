@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reference — Pillar Framework</title>
+  <meta name="description" content="Complete Pillar reference: CLI commands, built-in endpoints, full config table, all exceptions, and Docker deployment guide." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://zecrari.github.io/pillar/reference.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="assets/pillar.css" />
+
+  <style>
+    .cli-cmd { display: flex; align-items: baseline; gap: 12px; padding: 10px 14px;
+               border-left: 3px solid var(--primary); margin: 10px 0; background: var(--bg-alt); border-radius: 0 4px 4px 0; }
+    .cli-name { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--primary); white-space: nowrap; min-width: 160px; }
+    .cli-desc { font-size: 14px; color: var(--text-muted); }
+    .cli-opts  { margin: 6px 0 16px 0; padding: 0 14px 0 17px; }
+    .cli-opts li { font-size: 13px; color: var(--text-muted); margin: 4px 0; }
+    .cli-opts code { background: var(--bg-alt); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+
+    /* Endpoint badge */
+    .ep-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .ep-row:last-child { border-bottom: none; }
+    .ep-method { font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 3px; white-space: nowrap; }
+    .m-get  { background: #dbeafe; color: #1e40af; }
+    .m-post { background: #dcfce7; color: #166534; }
+    [data-theme="dark"] .m-get  { background: rgba(30,64,175,.3); color: #93c5fd; }
+    [data-theme="dark"] .m-post { background: rgba(22,101,52,.3);  color: #86efac; }
+    .ep-path { font-family: var(--mono); font-size: 14px; color: var(--text); white-space: nowrap; }
+    .ep-desc { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Config table with categories */
+    .cfg-section { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+                   color: var(--primary); padding: 10px 12px 4px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<nav class="p-nav">
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle sidebar">☰</button>
+  <a class="nav-brand" href="index.html"><span class="nav-brand-icon">🏛️</span>Pillar<span class="nav-brand-ver">v0.1</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html">Getting Started</a>
+    <a href="cookbook.html">Cookbook</a>
+    <a href="advanced.html">Advanced</a>
+    <a href="reference.html" class="nav-active">Reference</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-bmc" href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Support</a>
+    <button class="nav-btn" id="themeToggle">🌙</button>
+  </div>
+</nav>
+
+<div class="p-layout">
+  <aside class="p-sidebar" id="pSidebar">
+    <div class="sb-group">CLI</div>
+    <a href="#cli-run">pillar run</a>
+    <a href="#cli-new">pillar new</a>
+    <a href="#cli-generate">pillar generate</a>
+    <a href="#cli-routes">pillar routes</a>
+    <a href="#cli-info">pillar info</a>
+
+    <div class="sb-group">Built-in Endpoints</div>
+    <a href="#endpoints-list">All Endpoints</a>
+    <a href="#endpoints-health">Health & Readiness</a>
+    <a href="#endpoints-debug">Debug Endpoints</a>
+
+    <div class="sb-group">Configuration</div>
+    <a href="#config-app">[app]</a>
+    <a href="#config-database">[database]</a>
+    <a href="#config-queue">[queue]</a>
+    <a href="#config-cors">[cors]</a>
+    <a href="#config-security">[security]</a>
+    <a href="#config-docs">[docs]</a>
+    <a href="#config-telemetry">[telemetry]</a>
+    <a href="#config-env">Env Overrides</a>
+
+    <div class="sb-group">Exceptions</div>
+    <a href="#exceptions-all">All Exceptions</a>
+    <a href="#exceptions-custom">Custom Exceptions</a>
+
+    <div class="sb-group">Docker</div>
+    <a href="#docker-generate">Generate Dockerfile</a>
+    <a href="#docker-compose">docker-compose</a>
+    <a href="#docker-deploy">Production Checklist</a>
+
+    <div class="sb-group">Pages</div>
+    <a href="index.html"           class="sb-page">🏠 Home</a>
+    <a href="getting-started.html" class="sb-page">🚀 Getting Started</a>
+    <a href="cookbook.html"        class="sb-page">📖 Cookbook</a>
+    <a href="advanced.html"        class="sb-page">⚡ Advanced</a>
+    <a href="reference.html"       class="sb-page active">📋 Reference</a>
+  </aside>
+
+  <main class="p-content">
+    <div class="p-content-inner">
+
+      <h1>📋 Reference</h1>
+      <p>Complete reference for the Pillar CLI, built-in HTTP endpoints, all <code>pillar.toml</code> configuration keys, exceptions, and Docker deployment.</p>
+
+      <!-- ════════ CLI ════════ -->
+      <section id="cli-run">
+        <h2>CLI — pillar run <a href="#cli-run" class="anchor-link">#</a></h2>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar run</span>
+          <span class="cli-desc">Start the ASGI server (uvicorn under the hood)</span>
+        </div>
+        <ul class="cli-opts">
+          <li><code>APP</code> — ASGI application path, e.g. <code>main:app</code> (required)</li>
+          <li><code>--host TEXT</code> — Bind host (default: <code>0.0.0.0</code>)</li>
+          <li><code>--port INTEGER</code> — Bind port (default: <code>8000</code>)</li>
+          <li><code>--reload</code> — Auto-reload on file changes (development only)</li>
+          <li><code>--workers INTEGER</code> — Number of worker processes (default: <code>1</code>)</li>
+          <li><code>--log-level TEXT</code> — Logging level: <code>debug|info|warning|error|critical</code></li>
+        </ul>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">examples</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash"># Development — with hot reload
+pillar run main:app --reload
+
+# Production — 4 workers, port 80
+pillar run main:app --workers 4 --port 80 --log-level warning
+
+# Custom host
+pillar run main:app --host 127.0.0.1 --port 5000</code></pre>
+        </div>
+      </section>
+
+      <section id="cli-new">
+        <h2>CLI — pillar new <a href="#cli-new" class="anchor-link">#</a></h2>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar new &lt;name&gt;</span>
+          <span class="cli-desc">Scaffold a new Pillar project in a new directory</span>
+        </div>
+        <ul class="cli-opts">
+          <li><code>NAME</code> — Project name / directory (required)</li>
+          <li><code>--template TEXT</code> — Starter template: <code>minimal|api|fullstack</code> (default: <code>api</code>)</li>
+        </ul>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">bash</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar new my-api
+cd my-api
+pillar run main:app --reload</code></pre>
+        </div>
+
+        <p>Generated structure:</p>
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">generated layout</span><span class="code-lang">text</span></div>
+          <pre><code class="language-text">my-api/
+├── main.py              ← entry point, Pillar() bootstrap
+├── pillar.toml          ← all configuration
+├── requirements.txt
+└── domains/
+    └── users/
+        ├── router.py
+        ├── service.py
+        ├── repository.py
+        └── schemas.py</code></pre>
+        </div>
+      </section>
+
+      <section id="cli-generate">
+        <h2>CLI — pillar generate <a href="#cli-generate" class="anchor-link">#</a></h2>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar generate dockerfile</span>
+          <span class="cli-desc">Write a production-ready Dockerfile to <code>./Dockerfile</code></span>
+        </div>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar generate domain &lt;name&gt;</span>
+          <span class="cli-desc">Scaffold a new DDD domain (router/service/repository/schemas)</span>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">bash</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar generate dockerfile
+# → writes Dockerfile to ./Dockerfile
+
+pillar generate domain orders
+# → creates domains/orders/{router,service,repository,schemas}.py</code></pre>
+        </div>
+      </section>
+
+      <section id="cli-routes">
+        <h2>CLI — pillar routes <a href="#cli-routes" class="anchor-link">#</a></h2>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar routes &lt;app&gt;</span>
+          <span class="cli-desc">Print all registered routes in a table (method, path, handler name)</span>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">bash</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar routes main:app
+# ┌────────┬──────────────────┬──────────────────────────────┐
+# │ Method │ Path             │ Handler                      │
+# ├────────┼──────────────────┼──────────────────────────────┤
+# │ GET    │ /users/          │ domains.users.router:list    │
+# │ POST   │ /users/          │ domains.users.router:create  │
+# │ GET    │ /users/{id}      │ domains.users.router:get     │
+# │ DELETE │ /users/{id}      │ domains.users.router:delete  │
+# │ GET    │ /health          │ pillar.app:health_handler    │
+# └────────┴──────────────────┴──────────────────────────────┘</code></pre>
+        </div>
+      </section>
+
+      <section id="cli-info">
+        <h2>CLI — pillar info <a href="#cli-info" class="anchor-link">#</a></h2>
+
+        <div class="cli-cmd">
+          <span class="cli-name">pillar info</span>
+          <span class="cli-desc">Display environment information (Python version, Pillar version, Rust engine status, config file path)</span>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">bash</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar info
+# Pillar Framework v0.1.0
+# Python        : 3.11.9
+# Rust Engine   : ✓ PillarRouter + PillarQueue
+# Config file   : ./pillar.toml
+# Queue driver  : sqlite (pillar_queue.db)
+# Debug mode    : off</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ BUILT-IN ENDPOINTS ════════ -->
+      <section id="endpoints-list">
+        <h2>Built-in Endpoints <a href="#endpoints-list" class="anchor-link">#</a></h2>
+        <p>These endpoints are registered automatically. They can be disabled or reconfigured in <code>pillar.toml</code>.</p>
+
+        <div style="border:1px solid var(--border);border-radius:6px;padding:4px 16px;margin:16px 0;">
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/health</div><div class="ep-desc">Liveness probe — returns <code>{"status":"ok"}</code> with 200</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/ready</div><div class="ep-desc">Readiness probe — verifies DB connection + queue worker are live</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/metrics</div><div class="ep-desc">Request metrics (JSON). Add <code>?format=prometheus</code> for Prometheus text format</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/docs</div><div class="ep-desc">Swagger UI (interactive API explorer)</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/redoc</div><div class="ep-desc">ReDoc (read-only API reference)</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/openapi.json</div><div class="ep-desc">Raw OpenAPI 3.1 schema (JSON)</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/guide</div><div class="ep-desc">Framework built-in quick-start guide page (HTML)</div></div>
+          </div>
+          <div class="ep-row">
+            <span class="ep-method m-get">GET</span>
+            <div><div class="ep-path">/info</div><div class="ep-desc">Framework version + environment info (JSON)</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="endpoints-health">
+        <h2>Health &amp; Readiness Details <a href="#endpoints-health" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">GET /health</span><span class="code-lang">json</span></div>
+          <pre><code class="language-json">{"status": "ok", "version": "0.1.0"}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">GET /ready — healthy</span><span class="code-lang">json</span></div>
+          <pre><code class="language-json">{"status": "ready", "db": "ok", "queue": "ok"}</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">GET /ready — unhealthy (503)</span><span class="code-lang">json</span></div>
+          <pre><code class="language-json">{"status": "not_ready", "db": "error: unable to open database", "queue": "ok"}</code></pre>
+        </div>
+      </section>
+
+      <section id="endpoints-debug">
+        <h2>Debug Endpoints <a href="#endpoints-debug" class="anchor-link">#</a></h2>
+
+        <div class="adm warning">
+          <div class="adm-head">⚠ Debug mode only</div>
+          <div class="adm-body"><p>These endpoints are only registered when <code>debug = true</code> in <code>pillar.toml</code>. They are never available in production (the framework checks <code>app.debug</code> at startup, not at request time).</p></div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /debug/routes</code></td><td>Registered routes with full handler paths</td></tr>
+              <tr><td><code>GET /debug/di</code></td><td>DI container — registered classes and resolved singletons</td></tr>
+              <tr><td><code>GET /debug/queue</code></td><td>Queue state — pending, running, failed task counts</td></tr>
+              <tr><td><code>GET /debug/config</code></td><td>Active merged config (TOML + env vars, secrets redacted)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ════════ CONFIG ════════ -->
+      <section id="config-app">
+        <h2>Configuration — [app] <a href="#config-app" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[app]
+title       = "My Pillar App"   # shown in /docs title bar
+version     = "0.1.0"
+description = ""                # shown in /docs description
+debug       = false             # enables /debug/* endpoints
+env         = "production"      # "development" | "staging" | "production"
+domains_dir = "domains"         # root package for DDD enforcer scan</code></pre>
+        </div>
+      </section>
+
+      <section id="config-database">
+        <h2>Configuration — [database] <a href="#config-database" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[database]
+url            = "sqlite:///app.db"   # SQLite by default
+pool_size      = 5                    # thread-local pool max connections
+echo           = false                # log all SQL (dev only)
+wal_mode       = true                 # SQLite WAL mode
+foreign_keys   = true                 # enforce FK constraints</code></pre>
+        </div>
+      </section>
+
+      <section id="config-queue">
+        <h2>Configuration — [queue] <a href="#config-queue" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[queue]
+driver         = "sqlite"              # "sqlite" | "redis" | "postgres"
+db_path        = "pillar_queue.db"     # sqlite driver
+redis_url      = "redis://localhost:6379/0"   # redis driver
+postgres_url   = "postgresql://..."   # postgres driver
+workers        = 4                     # concurrent worker threads
+poll_interval  = 1.0                   # seconds between queue polls
+max_retries    = 3                     # global retry default (overridden per @background_task)</code></pre>
+        </div>
+      </section>
+
+      <section id="config-cors">
+        <h2>Configuration — [cors] <a href="#config-cors" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[cors]
+allow_origins      = ["*"]                   # ← tighten in production!
+allow_methods      = ["GET","POST","PUT","DELETE","PATCH","OPTIONS"]
+allow_headers      = ["*"]
+allow_credentials  = false
+expose_headers     = []
+max_age            = 600</code></pre>
+        </div>
+      </section>
+
+      <section id="config-security">
+        <h2>Configuration — [security] <a href="#config-security" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[security]
+# Security-headers middleware
+x_frame_options          = "SAMEORIGIN"
+x_content_type_options   = "nosniff"
+x_xss_protection         = "1; mode=block"
+referrer_policy          = "strict-origin-when-cross-origin"
+content_security_policy  = ""       # set to your CSP string or leave empty</code></pre>
+        </div>
+      </section>
+
+      <section id="config-docs">
+        <h2>Configuration — [docs] <a href="#config-docs" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[docs]
+enabled      = true
+swagger_url  = "/docs"
+redoc_url    = "/redoc"
+openapi_url  = "/openapi.json"
+guide_url    = "/guide"
+title        = ""     # overrides app.title in docs only
+description  = ""</code></pre>
+        </div>
+      </section>
+
+      <section id="config-telemetry">
+        <h2>Configuration — [telemetry] <a href="#config-telemetry" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[telemetry]
+enabled      = false         # OTel tracing (Phase 2)
+exporter     = "jaeger"      # "jaeger" | "datadog" | "grafana"
+endpoint     = "http://localhost:14268/api/traces"
+service_name = ""            # defaults to app.title</code></pre>
+        </div>
+      </section>
+
+      <section id="config-env">
+        <h2>Environment Variable Overrides <a href="#config-env" class="anchor-link">#</a></h2>
+
+        <p>Any config key can be overridden with an environment variable using the pattern <code>PILLAR_&lt;SECTION&gt;_&lt;KEY&gt;</code> (uppercased). Env vars take precedence over <code>pillar.toml</code>.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Env Variable</th><th>TOML equivalent</th></tr></thead>
+            <tbody>
+              <tr><td><code>PILLAR_APP_DEBUG</code></td><td><code>[app] debug</code></td></tr>
+              <tr><td><code>PILLAR_APP_ENV</code></td><td><code>[app] env</code></td></tr>
+              <tr><td><code>PILLAR_DATABASE_URL</code></td><td><code>[database] url</code></td></tr>
+              <tr><td><code>PILLAR_QUEUE_DRIVER</code></td><td><code>[queue] driver</code></td></tr>
+              <tr><td><code>PILLAR_QUEUE_REDIS_URL</code></td><td><code>[queue] redis_url</code></td></tr>
+              <tr><td><code>PILLAR_CORS_ALLOW_ORIGINS</code></td><td><code>[cors] allow_origins</code></td></tr>
+              <tr><td><code>PILLAR_DOCS_ENABLED</code></td><td><code>[docs] enabled</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">.env / Docker / CI</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">export PILLAR_APP_DEBUG=false
+export PILLAR_DATABASE_URL=sqlite:///prod.db
+export PILLAR_QUEUE_DRIVER=redis
+export PILLAR_QUEUE_REDIS_URL=redis://redis:6379/0
+export PILLAR_DOCS_ENABLED=false    # hide API docs in production</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ EXCEPTIONS ════════ -->
+      <section id="exceptions-all">
+        <h2>Exception Reference <a href="#exceptions-all" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Exception</th><th>HTTP Status</th><th>Use when</th></tr></thead>
+            <tbody>
+              <tr><td><code>NotFoundError</code></td><td>404</td><td>Resource does not exist (e.g. <code>db.query()</code> returns <code>None</code>)</td></tr>
+              <tr><td><code>UnauthorizedError</code></td><td>401</td><td>No valid credentials supplied (missing / expired token)</td></tr>
+              <tr><td><code>ForbiddenError</code></td><td>403</td><td>Credentials valid but the user lacks permission</td></tr>
+              <tr><td><code>ValidationError</code></td><td>422</td><td>Input data fails business-rule validation (not just schema)</td></tr>
+              <tr><td><code>ConflictError</code></td><td>409</td><td>Unique constraint violation or duplicate resource</td></tr>
+              <tr><td><code>PillarContractError</code></td><td>500</td><td>Framework-level misconfiguration (wrong types passed to Pillar internals)</td></tr>
+              <tr><td><code>ArchitectureViolationError</code></td><td>500 (startup)</td><td>DDD layer import violation detected at startup</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">imports</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.exceptions import (
+    PillarError,               # base class for all Pillar exceptions
+    NotFoundError,
+    UnauthorizedError,
+    ForbiddenError,
+    ValidationError,
+    ConflictError,
+    PillarContractError,
+    ArchitectureViolationError,
+)</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">usage in service.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.exceptions import NotFoundError, ConflictError, ValidationError
+
+class UserService:
+    def get(self, user_id: int):
+        user = self.repo.get(user_id)
+        if not user:
+            raise NotFoundError(f"User {user_id} not found")
+        return user
+
+    def create(self, data: UserCreate):
+        if self.repo.email_exists(data.email):
+            raise ConflictError(f"Email already registered: {data.email}")
+        if not data.password or len(data.password) < 8:
+            raise ValidationError("Password must be at least 8 characters")
+        return self.repo.create(data)
+
+    def delete(self, requester_id: int, target_id: int):
+        requester = self.repo.get(requester_id)
+        if requester["role"] != "admin":
+            raise ForbiddenError("Only admins can delete users")</code></pre>
+        </div>
+      </section>
+
+      <section id="exceptions-custom">
+        <h2>Custom Exceptions <a href="#exceptions-custom" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">exceptions.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.exceptions import PillarError
+
+class PaymentDeclinedError(PillarError):
+    status_code = 402
+    default_message = "Payment was declined by the processor"
+
+class RateLimitError(PillarError):
+    status_code = 429
+    default_message = "Too many requests"
+
+    def __init__(self, retry_after_seconds: int = 60):
+        super().__init__(self.default_message)
+        self.retry_after = retry_after_seconds
+
+    def to_response(self):
+        return {
+            "error": str(self),
+            "retry_after": self.retry_after
+        }, self.status_code
+
+# Raise anywhere in the service / repository layer
+raise PaymentDeclinedError("Insufficient funds")
+raise RateLimitError(retry_after_seconds=30)</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ DOCKER ════════ -->
+      <section id="docker-generate">
+        <h2>Generate Dockerfile <a href="#docker-generate" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">bash</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar generate dockerfile
+# → writes the following to ./Dockerfile</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">Dockerfile (generated)</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-dockerfile">FROM python:3.11-slim AS base
+
+WORKDIR /app
+
+# Install system dependencies for Rust-compiled extension
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+# Run with multiple workers
+CMD ["pillar", "run", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]</code></pre>
+        </div>
+      </section>
+
+      <section id="docker-compose">
+        <h2>docker-compose Example <a href="#docker-compose" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">docker-compose.yml</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PILLAR_APP_ENV=production
+      - PILLAR_APP_DEBUG=false
+      - PILLAR_DATABASE_URL=sqlite:///data/app.db
+      - PILLAR_QUEUE_DRIVER=redis
+      - PILLAR_QUEUE_REDIS_URL=redis://redis:6379/0
+      - PILLAR_DOCS_ENABLED=false
+    volumes:
+      - db_data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  db_data:</code></pre>
+        </div>
+      </section>
+
+      <section id="docker-deploy">
+        <h2>Production Checklist <a href="#docker-deploy" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Checklist Item</th><th>How</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Disable debug</td><td><code>PILLAR_APP_DEBUG=false</code></td><td>Hides /debug/* endpoints</td></tr>
+              <tr><td>Disable API docs</td><td><code>PILLAR_DOCS_ENABLED=false</code></td><td>Don't expose schema to public</td></tr>
+              <tr><td>Restrict CORS</td><td><code>allow_origins = ["https://yourdomain.com"]</code></td><td>Prevent cross-origin attacks</td></tr>
+              <tr><td>Use multiple workers</td><td><code>--workers 4</code> (or <code>2 × CPU + 1</code>)</td><td>Parallelism under load</td></tr>
+              <tr><td>Mount a persistent volume</td><td>Map <code>/app/data</code> → host or cloud volume</td><td>SQLite survives container restarts</td></tr>
+              <tr><td>Wire up health checks</td><td>Kubernetes/ECS liveness: <code>GET /health</code></td><td>Auto-restart on deadlock</td></tr>
+              <tr><td>Use readiness for traffic</td><td>Readiness: <code>GET /ready</code></td><td>Only send traffic when DB/queue ready</td></tr>
+              <tr><td>Pin Python version</td><td><code>FROM python:3.11-slim</code></td><td>Reproducible builds</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="adm tip">
+          <div class="adm-head">💡 SQLite in production</div>
+          <div class="adm-body">
+            <p>SQLite in WAL mode easily handles 10 000+ req/s for read-heavy workloads on a single server. It's a valid production choice unless you need multiple write replicas. When you outgrow it, update <code>PILLAR_DATABASE_URL</code> — the repository layer is unchanged.</p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /.p-content-inner -->
+
+    <footer class="p-footer">
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="cookbook.html">Cookbook</a>
+        <a href="advanced.html">Advanced</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Donate</a>
+      </div>
+      <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener" class="footer-bmc">☕ Buy Me a Coffee</a>
+      <p>🏛️ <strong style="color:rgba(255,255,255,.7)">Pillar Framework</strong> — Production-Grade Python Backend</p>
+      <p class="footer-copy">© 2025 Ramesh Kannan · MIT License</p>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/toml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="assets/pillar.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+[package]
+name = "pillar"
+version = "0.1.0"
+edition = "2021"
+description = "Pillar Rust Engine — radix-tree router + SQLite WAL task queue, exposed to Python via PyO3"
+
+[lib]
+name = "_pillar_engine"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.22", features = ["extension-module"] }
+
+# Radix-tree HTTP router (same crate Axum uses internally)
+matchit = "0.8"
+
+# SQLite with bundled libsqlite3 — no system dependency required
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# Serialisation
+serde_json = "1"
+
+# UUID v4 for task IDs
+uuid = { version = "1", features = ["v4"] }
+
+# Timestamps
+chrono = { version = "0.4", features = ["clock"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

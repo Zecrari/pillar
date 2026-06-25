@@ -1,0 +1,41 @@
+[app]
+title       = "Pillar Example API"
+version     = "1.0.0"
+description = "A demo API built with the Pillar framework — Rust-powered, DDD-enforced."
+debug       = true
+host        = "0.0.0.0"
+port        = 8000
+
+[database]
+url = "sqlite:///./example.db"
+
+[queue]
+driver        = "sqlite"
+db_path       = "example_queue.db"
+workers       = 4
+poll_interval = 0.5
+
+[docs]
+enabled      = true
+swagger_url  = "/docs"
+redoc_url    = "/redoc"
+openapi_url  = "/openapi.json"
+guide_url    = "/guide"
+
+[cors]
+enabled           = true
+allow_origins     = ["*"]
+allow_methods     = ["*"]
+allow_headers     = ["*"]
+allow_credentials = false
+
+[security]
+add_request_id       = true
+add_timing           = true
+add_security_headers = true
+
+[telemetry]
+enabled      = false
+exporter     = "jaeger"
+endpoint     = ""
+service_name = "pillar-example"

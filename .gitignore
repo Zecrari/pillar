@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+*.whl
+
+# Rust / Maturin
+target/
+Cargo.lock
+
+# Databases (dev artifacts)
+*.db
+*.db-wal
+*.db-shm
+pillar_queue.db*
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.xml
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.bak
+
+# Pillar internal
+.claude/

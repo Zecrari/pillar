@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookbook — Pillar Framework</title>
+  <meta name="description" content="Pillar cookbook: routing, dependency injection, request bodies, error handling, middleware, CORS, and WebSockets with full code examples." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://zecrari.github.io/pillar/cookbook.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="assets/pillar.css" />
+</head>
+<body>
+
+<nav class="p-nav">
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle sidebar">☰</button>
+  <a class="nav-brand" href="index.html"><span class="nav-brand-icon">🏛️</span>Pillar<span class="nav-brand-ver">v0.1</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html">Getting Started</a>
+    <a href="cookbook.html" class="nav-active">Cookbook</a>
+    <a href="advanced.html">Advanced</a>
+    <a href="reference.html">Reference</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-bmc" href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Support</a>
+    <button class="nav-btn" id="themeToggle">🌙</button>
+  </div>
+</nav>
+
+<div class="p-layout">
+  <aside class="p-sidebar" id="pSidebar">
+    <div class="sb-group">Routing</div>
+    <a href="#router-setup">Creating a Router</a>
+    <a href="#http-methods">HTTP Methods</a>
+    <a href="#path-params">Path Parameters</a>
+    <a href="#query-params">Query Parameters</a>
+    <a href="#raw-request">Raw Request</a>
+    <a href="#custom-response">Custom Responses</a>
+    <a href="#route-options">Route Options</a>
+
+    <div class="sb-group">Dependency Injection</div>
+    <a href="#di-how">How It Works</a>
+    <a href="#di-precedence">Injection Precedence</a>
+    <a href="#di-manual">Manual Registration</a>
+    <a href="#di-bind">Interface Binding</a>
+    <a href="#di-test">Testing with DI</a>
+
+    <div class="sb-group">Request Bodies</div>
+    <a href="#pydantic-body">Pydantic Models</a>
+    <a href="#validation">Field Validation</a>
+    <a href="#nested">Nested Models</a>
+
+    <div class="sb-group">Error Handling</div>
+    <a href="#raise-errors">Raising Errors</a>
+    <a href="#custom-errors">Custom Exceptions</a>
+    <a href="#debug-mode">Debug Mode</a>
+
+    <div class="sb-group">Middleware & CORS</div>
+    <a href="#middleware-stack">Default Stack</a>
+    <a href="#cors-config">CORS Config</a>
+    <a href="#security-headers">Security Headers</a>
+
+    <div class="sb-group">WebSockets</div>
+    <a href="#ws-basic">Basic WebSocket</a>
+    <a href="#ws-di">WebSocket with DI</a>
+    <a href="#ws-rooms">Chat Rooms Pattern</a>
+
+    <div class="sb-group">Pages</div>
+    <a href="index.html"           class="sb-page">🏠 Home</a>
+    <a href="getting-started.html" class="sb-page">🚀 Getting Started</a>
+    <a href="cookbook.html"        class="sb-page active">📖 Cookbook</a>
+    <a href="advanced.html"        class="sb-page">⚡ Advanced</a>
+    <a href="reference.html"       class="sb-page">📋 Reference</a>
+  </aside>
+
+  <main class="p-content">
+    <div class="p-content-inner">
+
+      <h1>📖 Cookbook</h1>
+      <p>Practical recipes for every common pattern in Pillar. Each section shows the full, working code — no placeholders.</p>
+
+      <!-- ════════ ROUTING ════════ -->
+      <section id="router-setup">
+        <h2>Creating a Router <a href="#router-setup" class="anchor-link">#</a></h2>
+        <p>A <code>Router</code> collects route definitions for one domain. Register it with the app using <code>include_router()</code>.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/products/router.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Router
+
+router = Router(
+    prefix="/products",  # prepended to every route in this router
+    tags=["Products"],   # grouped in Swagger UI
+)</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">main.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Pillar
+from domains.products.router import router as products_router
+from domains.users.router    import router as users_router
+
+app = Pillar(title="My API")
+app.include_router(products_router)
+app.include_router(users_router)</code></pre>
+        </div>
+      </section>
+
+      <section id="http-methods">
+        <h2>HTTP Methods <a href="#http-methods" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.get("/")           # list / read
+@router.post("/")          # create  (default status_code=201)
+@router.put("/{id}")       # full update
+@router.patch("/{id}")     # partial update
+@router.delete("/{id}")    # remove  (return 204 + None)
+@router.head("/")          # headers only (no body)
+@router.options("/")       # CORS preflight</code></pre>
+        </div>
+      </section>
+
+      <section id="path-params">
+        <h2>Path Parameters <a href="#path-params" class="anchor-link">#</a></h2>
+        <p>Use <code>{name}</code> in the path. Pillar coerces the string to the annotated type automatically.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.get("/{product_id}/reviews/{review_id}")
+async def get_review(product_id: int, review_id: int):
+    # Both coerced to int — no manual int() call needed
+    return {"product": product_id, "review": review_id}
+
+@router.get("/{slug}")
+async def get_by_slug(slug: str):
+    return {"slug": slug}</code></pre>
+        </div>
+      </section>
+
+      <section id="query-params">
+        <h2>Query Parameters <a href="#query-params" class="anchor-link">#</a></h2>
+        <p>Parameters not in the path and not Pydantic models are treated as query params. Defaults make them optional.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.get("/search")
+async def search(
+    q:       str,
+    limit:   int   = 20,
+    offset:  int   = 0,
+    sort:    str   = "created_at",
+    order:   str   = "desc",
+    active:  bool  = True,
+):
+    # GET /search?q=laptop&limit=10&offset=20&active=true
+    ...</code></pre>
+        </div>
+      </section>
+
+      <section id="raw-request">
+        <h2>Raw Request Access <a href="#raw-request" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from starlette.requests import Request
+
+@router.post("/webhook")
+async def webhook(request: Request):
+    body     = await request.body()          # raw bytes
+    payload  = await request.json()          # parsed JSON
+    token    = request.headers.get("X-Signature", "")
+    ip       = request.client.host
+    qs       = dict(request.query_params)
+    return {"received": len(body), "ip": ip}</code></pre>
+        </div>
+      </section>
+
+      <section id="custom-response">
+        <h2>Custom Responses <a href="#custom-response" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from starlette.responses import (
+    JSONResponse, PlainTextResponse,
+    HTMLResponse, Response, RedirectResponse,
+)
+
+@router.get("/csv-export")
+async def csv(service: ReportService):
+    data = service.generate_csv()
+    return PlainTextResponse(data, media_type="text/csv",
+                             headers={"Content-Disposition": 'attachment; filename="report.csv"'})
+
+@router.get("/binary/{file_id}")
+async def download(file_id: str, store: FileStore):
+    content = store.get(file_id)
+    return Response(content, media_type="application/octet-stream")
+
+@router.get("/old-url")
+async def redirect():
+    return RedirectResponse(url="/new-url", status_code=301)
+
+@router.post("/async-job")
+async def create_job(data: JobRequest, svc: JobService):
+    job_id = svc.enqueue(data)
+    return JSONResponse({"job_id": job_id}, status_code=202,
+                        headers={"Location": f"/jobs/{job_id}"})</code></pre>
+        </div>
+      </section>
+
+      <section id="route-options">
+        <h2>Route Decorator Options <a href="#route-options" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>status_code</code></td><td>int</td><td>200 (POST: 201)</td><td>HTTP status on success</td></tr>
+              <tr><td><code>summary</code></td><td>str</td><td>None</td><td>Short OpenAPI description</td></tr>
+              <tr><td><code>description</code></td><td>str</td><td>docstring</td><td>Long description in docs</td></tr>
+              <tr><td><code>response_model</code></td><td>Type</td><td>None</td><td>Pydantic model for response schema</td></tr>
+              <tr><td><code>deprecated</code></td><td>bool</td><td>False</td><td>Mark as deprecated in Swagger</td></tr>
+              <tr><td><code>include_in_schema</code></td><td>bool</td><td>True</td><td>Hide from OpenAPI docs</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">full example</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.post(
+    "/",
+    status_code=201,
+    summary="Create a product",
+    description="Creates a new product and returns it with a generated ID.",
+    response_model=ProductResponse,
+    deprecated=False,
+    include_in_schema=True,
+)
+async def create_product(data: ProductCreate, svc: ProductService):
+    """Auto-filled from docstring if summary not provided."""
+    return svc.create(data)</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ DI ════════ -->
+      <section id="di-how">
+        <h2>How Dependency Injection Works <a href="#di-how" class="anchor-link">#</a></h2>
+        <p>Pillar reads your handler's type hints at call time and resolves each parameter from the DI container — recursively. The entire dependency graph is constructed once and cached as singletons.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">automatic resolution chain</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python"># Handler needs UserService
+# UserService.__init__(self, repo: UserRepository)
+# UserRepository.__init__(self, db: Database)
+#   → Database is registered as a singleton by Pillar at startup
+#   → UserRepository is constructed with that db
+#   → UserService is constructed with that repo
+#   → All cached for the lifetime of the app
+
+@router.get("/{user_id}")
+async def get_user(user_id: int, service: UserService):
+    # 'service' is fully wired — zero configuration required
+    return service.get_user(user_id)</code></pre>
+        </div>
+      </section>
+
+      <section id="di-precedence">
+        <h2>Injection Precedence <a href="#di-precedence" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Priority</th><th>Condition</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Parameter name matches <code>{path_param}</code></td><td>Coerced to annotated type</td></tr>
+              <tr><td>2</td><td>Annotation is a Pydantic <code>BaseModel</code></td><td>Parsed from JSON body</td></tr>
+              <tr><td>3</td><td>Annotation is a non-primitive class</td><td>Resolved from DI container</td></tr>
+              <tr><td>4</td><td>Annotation is <code>Request</code></td><td>Raw Starlette request object</td></tr>
+              <tr><td>5</td><td>Everything else (str, int, etc.)</td><td>Query parameter (with optional default)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="di-manual">
+        <h2>Manual Singleton Registration <a href="#di-manual" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">main.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.di import container
+from core.email  import EmailClient
+from core.cache  import RedisCache
+
+# Pre-built instances — the container returns this exact object
+container.register_instance(
+    EmailClient,
+    EmailClient(api_key="sk-...", from_addr="no-reply@example.com")
+)
+
+container.register_instance(
+    RedisCache,
+    RedisCache(url="redis://localhost:6379/0")
+)
+
+# Now any handler/service with `cache: RedisCache` gets this instance</code></pre>
+        </div>
+      </section>
+
+      <section id="di-bind">
+        <h2>Interface → Implementation Binding <a href="#di-bind" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.di import container
+from core.interfaces import IPaymentGateway, IEmailSender
+from adapters.stripe  import StripeGateway
+from adapters.sendgrid import SendGridEmailSender
+
+# Swap implementations per environment
+if os.environ.get("ENV") == "test":
+    container.bind(IPaymentGateway, MockPaymentGateway)
+    container.bind(IEmailSender,    InMemoryEmailSender)
+else:
+    container.bind(IPaymentGateway, StripeGateway)
+    container.bind(IEmailSender,    SendGridEmailSender)</code></pre>
+        </div>
+      </section>
+
+      <section id="di-test">
+        <h2>Testing with DI <a href="#di-test" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">tests/conftest.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">import pytest
+from pillar.di import container
+from pillar.db import Database
+
+@pytest.fixture(autouse=True)
+def reset_container():
+    """Start every test with a clean DI container."""
+    container.reset()
+    yield
+
+@pytest.fixture
+def test_db():
+    """In-memory SQLite for tests — no disk state leaks."""
+    db = Database(url="sqlite:///:memory:")
+    container.register_instance(Database, db)
+    return db</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ REQUEST BODIES ════════ -->
+      <section id="pydantic-body">
+        <h2>Pydantic Request Bodies <a href="#pydantic-body" class="anchor-link">#</a></h2>
+        <p>Type-annotate a handler parameter with any Pydantic <code>BaseModel</code> and Pillar parses the JSON body into it automatically.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pydantic import BaseModel
+from typing import Optional
+
+class CreateOrderRequest(BaseModel):
+    product_id: int
+    quantity:   int
+    notes:      Optional[str] = None
+
+class OrderResponse(BaseModel):
+    id:         int
+    product_id: int
+    quantity:   int
+    total:      float
+    status:     str
+
+@router.post("/", status_code=201, response_model=OrderResponse)
+async def create_order(data: CreateOrderRequest, svc: OrderService):
+    return svc.create(data.product_id, data.quantity, data.notes)</code></pre>
+        </div>
+      </section>
+
+      <section id="validation">
+        <h2>Field Validation <a href="#validation" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pydantic import BaseModel, Field, field_validator
+from typing import Annotated
+
+Price = Annotated[float, Field(gt=0, description="Must be positive")]
+
+class ProductCreate(BaseModel):
+    name:        str   = Field(min_length=1, max_length=200)
+    price:       Price
+    category:    str   = Field(pattern=r"^[a-z_]+$")
+    stock:       int   = Field(ge=0, default=0)
+    description: str   = Field(default="", max_length=2000)
+
+    @field_validator("name")
+    @classmethod
+    def name_not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("name must not be blank")
+        return v.strip()</code></pre>
+        </div>
+      </section>
+
+      <section id="nested">
+        <h2>Nested Models <a href="#nested" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pydantic import BaseModel
+from typing import List
+
+class Address(BaseModel):
+    line1:   str
+    city:    str
+    country: str
+    zip:     str
+
+class CustomerCreate(BaseModel):
+    name:     str
+    email:    str
+    address:  Address
+    tags:     List[str] = []
+
+@router.post("/customers/", status_code=201)
+async def create_customer(data: CustomerCreate, svc: CustomerService):
+    return svc.create(data.name, data.email, data.address.dict(), data.tags)</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ ERRORS ════════ -->
+      <section id="raise-errors">
+        <h2>Raising Errors <a href="#raise-errors" class="anchor-link">#</a></h2>
+        <p>Raise any Pillar exception from any layer — Pillar catches it and returns the right HTTP response automatically. No try/except in handlers needed.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.exceptions import (
+    NotFoundError,      # 404
+    UnauthorizedError,  # 401
+    ForbiddenError,     # 403
+    ConflictError,      # 409
+    ValidationError,    # 422
+)
+
+class ProductService:
+    def get(self, product_id: int) -> dict:
+        product = self.repo.get(product_id)
+        if not product:
+            raise NotFoundError(f"Product {product_id} not found")
+        return product
+
+    def create(self, data: dict, actor: dict) -> dict:
+        if actor["role"] not in ("admin", "manager"):
+            raise ForbiddenError("Only admins and managers can create products")
+
+        if self.repo.sku_exists(data["sku"]):
+            raise ConflictError(f"SKU '{data['sku']}' already exists")
+
+        return self.repo.create(data)
+
+    def publish(self, product_id: int, actor: dict) -> dict:
+        if not actor.get("verified"):
+            raise UnauthorizedError("Email verification required")</code></pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Exception</th><th>Status</th><th>Default detail</th></tr></thead>
+            <tbody>
+              <tr><td><code>NotFoundError</code></td><td>404</td><td>Resource not found</td></tr>
+              <tr><td><code>UnauthorizedError</code></td><td>401</td><td>Authentication required</td></tr>
+              <tr><td><code>ForbiddenError</code></td><td>403</td><td>Permission denied</td></tr>
+              <tr><td><code>ConflictError</code></td><td>409</td><td>Resource already exists</td></tr>
+              <tr><td><code>ValidationError</code></td><td>422</td><td>Validation failed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="custom-errors">
+        <h2>Custom Exceptions <a href="#custom-errors" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">core/exceptions.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.exceptions import PillarError
+
+class PaymentDeclinedError(PillarError):
+    status_code = 402
+    detail      = "Payment declined"
+
+class RateLimitError(PillarError):
+    status_code = 429
+    detail      = "Too many requests"
+
+class ServiceUnavailableError(PillarError):
+    status_code = 503
+    detail      = "Service temporarily unavailable"
+
+# Usage
+raise PaymentDeclinedError("Card ending in 4242 was declined")
+raise RateLimitError("Limit: 100 requests per minute")</code></pre>
+        </div>
+      </section>
+
+      <section id="debug-mode">
+        <h2>Debug Mode <a href="#debug-mode" class="anchor-link">#</a></h2>
+
+        <div class="adm warn">
+          <div class="adm-head">⚠ Production warning</div>
+          <div class="adm-body"><p>Debug mode returns full Python tracebacks in 500 responses. Never enable it in production — it exposes internal code structure.</p></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[app]
+debug = true   # full traceback in 500 responses + verbose logs</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">debug 500 response</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">{
+  "detail":    "division by zero",
+  "traceback": "Traceback (most recent call last):\n  File ..."
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ MIDDLEWARE ════════ -->
+      <section id="middleware-stack">
+        <h2>Default Middleware Stack <a href="#middleware-stack" class="anchor-link">#</a></h2>
+        <p>Every Pillar app is wrapped with this middleware stack automatically — all configurable via <code>pillar.toml</code>.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Middleware</th><th>Default</th><th>Header added</th></tr></thead>
+            <tbody>
+              <tr><td>Request ID</td><td>enabled</td><td><code>X-Request-ID: &lt;uuid&gt;</code></td></tr>
+              <tr><td>Response Time</td><td>enabled</td><td><code>X-Response-Time: 2.3ms</code></td></tr>
+              <tr><td>Security Headers</td><td>enabled</td><td>X-Content-Type-Options, X-Frame-Options, …</td></tr>
+              <tr><td>CORS</td><td>enabled</td><td>Access-Control-Allow-Origin, …</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml — disable individual items</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[security]
+add_request_id       = true
+add_timing           = true
+add_security_headers = false   # e.g. if a CDN adds these upstream</code></pre>
+        </div>
+      </section>
+
+      <section id="cors-config">
+        <h2>CORS Configuration <a href="#cors-config" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml — production CORS</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[cors]
+enabled           = true
+allow_origins     = ["https://myapp.com", "https://staging.myapp.com"]
+allow_methods     = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+allow_headers     = ["Authorization", "Content-Type", "X-Request-ID"]
+allow_credentials = true
+expose_headers    = ["X-Request-ID", "X-Response-Time"]</code></pre>
+        </div>
+
+        <div class="adm tip">
+          <div class="adm-head">💡 Wildcard origins</div>
+          <div class="adm-body"><p>Setting <code>allow_origins = ["*"]</code> disables cookie/credential sharing. If you need <code>allow_credentials = true</code>, list each origin explicitly.</p></div>
+        </div>
+      </section>
+
+      <section id="security-headers">
+        <h2>Security Headers <a href="#security-headers" class="anchor-link">#</a></h2>
+        <p>When <code>add_security_headers = true</code>, Pillar adds these headers to every response:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Header</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>X-Content-Type-Options</code></td><td>nosniff</td></tr>
+              <tr><td><code>X-Frame-Options</code></td><td>DENY</td></tr>
+              <tr><td><code>X-XSS-Protection</code></td><td>1; mode=block</td></tr>
+              <tr><td><code>Referrer-Policy</code></td><td>strict-origin-when-cross-origin</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ════════ WEBSOCKETS ════════ -->
+      <section id="ws-basic">
+        <h2>Basic WebSocket <a href="#ws-basic" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/realtime/router.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Router
+from starlette.websockets import WebSocket, WebSocketDisconnect
+
+router = Router(prefix="/realtime", tags=["Realtime"])
+
+@router.websocket("/ws/ping")
+async def ping(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            msg = await websocket.receive_text()
+            await websocket.send_text(f"pong: {msg}")
+    except WebSocketDisconnect:
+        pass   # client closed normally</code></pre>
+        </div>
+      </section>
+
+      <section id="ws-di">
+        <h2>WebSocket with DI <a href="#ws-di" class="anchor-link">#</a></h2>
+        <p>The same injection rules as HTTP handlers apply — type-hint a parameter and Pillar injects it.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.websocket("/ws/notifications/{user_id}")
+async def notifications(
+    websocket: WebSocket,
+    user_id:   int,              # ← path param
+    svc:       NotificationService,  # ← DI injected
+):
+    await websocket.accept()
+    async for event in svc.stream_events(user_id):
+        await websocket.send_json(event)</code></pre>
+        </div>
+      </section>
+
+      <section id="ws-rooms">
+        <h2>Chat Rooms Pattern <a href="#ws-rooms" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/chat/router.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Router
+from starlette.websockets import WebSocket, WebSocketDisconnect
+from collections import defaultdict
+from typing import Dict, Set
+
+router = Router(prefix="/chat", tags=["Chat"])
+
+# In-memory room registry (use Redis for multi-process)
+_rooms: Dict[str, Set[WebSocket]] = defaultdict(set)
+
+@router.websocket("/ws/{room_id}")
+async def chat_room(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    _rooms[room_id].add(websocket)
+    try:
+        while True:
+            msg = await websocket.receive_text()
+            # Broadcast to everyone in the room
+            dead = set()
+            for ws in _rooms[room_id]:
+                try:
+                    await ws.send_text(f"[{room_id}] {msg}")
+                except Exception:
+                    dead.add(ws)
+            _rooms[room_id] -= dead
+    except WebSocketDisconnect:
+        _rooms[room_id].discard(websocket)</code></pre>
+        </div>
+      </section>
+
+    </div><!-- /.p-content-inner -->
+
+    <footer class="p-footer">
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="cookbook.html">Cookbook</a>
+        <a href="advanced.html">Advanced</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Donate</a>
+      </div>
+      <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener" class="footer-bmc">☕ Buy Me a Coffee</a>
+      <p>🏛️ <strong style="color:rgba(255,255,255,.7)">Pillar Framework</strong> — Production-Grade Python Backend</p>
+      <p class="footer-copy">© 2025 Ramesh Kannan · MIT License</p>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/toml.min.js"></script>
+<script src="assets/pillar.js"></script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started — Pillar Framework</title>
+  <meta name="description" content="Install Pillar, scaffold your first project, and build a production-ready Python API in under 5 minutes. Full quickstart guide." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://zecrari.github.io/pillar/getting-started.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="assets/pillar.css" />
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────────────────── -->
+<nav class="p-nav">
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle sidebar">☰</button>
+  <a class="nav-brand" href="index.html"><span class="nav-brand-icon">🏛️</span>Pillar<span class="nav-brand-ver">v0.1</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html" class="nav-active">Getting Started</a>
+    <a href="cookbook.html">Cookbook</a>
+    <a href="advanced.html">Advanced</a>
+    <a href="reference.html">Reference</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-bmc" href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Support</a>
+    <button class="nav-btn" id="themeToggle" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</nav>
+
+<div class="p-layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="p-sidebar" id="pSidebar" aria-label="Sidebar navigation">
+    <div class="sb-group">On This Page</div>
+    <a href="#installation">Installation</a>
+    <a href="#verify">Verify Setup</a>
+    <a href="#scaffold">Scaffold a Project</a>
+    <a href="#manual">Build Manually</a>
+    <a href="#repository">1 · Repository</a>
+    <a href="#service">2 · Service</a>
+    <a href="#schemas">3 · Schemas</a>
+    <a href="#router">4 · Router</a>
+    <a href="#entrypoint">5 · Entry Point</a>
+    <a href="#run">Run the App</a>
+    <a href="#explore">Explore Endpoints</a>
+    <a href="#project-structure">Project Structure</a>
+    <a href="#configuration">Configuration</a>
+    <a href="#next">What's Next</a>
+
+    <div class="sb-group">Pages</div>
+    <a href="index.html"           class="sb-page">🏠 Home</a>
+    <a href="getting-started.html" class="sb-page active">🚀 Getting Started</a>
+    <a href="cookbook.html"        class="sb-page">📖 Cookbook</a>
+    <a href="advanced.html"        class="sb-page">⚡ Advanced</a>
+    <a href="reference.html"       class="sb-page">📋 Reference</a>
+  </aside>
+
+  <!-- ── Content ─────────────────────────────────────────────────── -->
+  <main class="p-content">
+    <div class="p-content-inner">
+
+      <h1>🚀 Getting Started</h1>
+      <p>This guide takes you from a fresh Python environment to a running Pillar API in under 5 minutes — with DI, background queue, health checks, and Swagger docs all working out of the box.</p>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="installation">
+        <h2>Installation <a href="#installation" class="anchor-link">#</a></h2>
+
+        <h3>Requirements</h3>
+        <ul>
+          <li>Python <strong>3.10 or higher</strong></li>
+          <li>pip (any recent version)</li>
+        </ul>
+
+        <h3>Install from PyPI</h3>
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pip install pillar</code></pre>
+        </div>
+
+        <div class="adm tip">
+          <div class="adm-head">💡 Tip — Rust engine</div>
+          <div class="adm-body"><p>The <code>pillar</code> package ships with a pre-compiled Rust engine for Linux, macOS, and Windows (x86_64). If no compiled wheel is available for your platform, Pillar falls back to a pure-Python router automatically — everything still works.</p></div>
+        </div>
+
+        <h3>For framework contributors (compile Rust from source)</h3>
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash"># 1. Install Rust (https://rustup.rs)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 2. Install maturin (Rust→Python build tool)
+pip install maturin
+
+# 3. Clone and compile
+git clone https://github.com/Zecrari/pillar.git
+cd pillar
+maturin develop --release
+
+# 4. Verify the Rust engine loaded
+pillar info</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="verify">
+        <h2>Verify Setup <a href="#verify" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar info
+# Pillar Framework
+#    Python  : 3.12.0
+#    Engine  : 0.1.0  (Rust radix-tree router + SQLite WAL queue)
+#    Router  : Rust radix-tree
+#    Queue   : Rust SQLite WAL
+
+pillar --version
+# pillar, version 0.1.0</code></pre>
+        </div>
+
+        <div class="adm info">
+          <div class="adm-head">ℹ Run the test suite</div>
+          <div class="adm-body"><p>If you cloned the repository: <code>python -m pytest tests/ -v</code> — all 39 tests should be green.</p></div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="scaffold">
+        <h2>Option A — Scaffold a Project <a href="#scaffold" class="anchor-link">#</a></h2>
+        <p>The fastest way. One command creates a full domain skeleton with working users CRUD.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">pillar new myapp
+cd myapp
+pip install -r requirements.txt
+pillar run main:app --reload</code></pre>
+        </div>
+
+        <p>Now open your browser:</p>
+        <ul>
+          <li><code>http://localhost:8000/docs</code> — Swagger UI</li>
+          <li><code>http://localhost:8000/redoc</code> — ReDoc</li>
+          <li><code>http://localhost:8000/health</code> — liveness probe</li>
+          <li><code>http://localhost:8000/guide</code> — interactive route guide</li>
+        </ul>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="manual">
+        <h2>Option B — Build Manually <a href="#manual" class="anchor-link">#</a></h2>
+        <p>Walk through each layer so you understand exactly what Pillar does for you.</p>
+      </section>
+
+      <section id="repository">
+        <h3>Step 1 · Repository <a href="#repository" class="anchor-link">#</a></h3>
+        <p>The repository layer is the <em>only</em> place that touches the database. It may import from <code>schemas</code> but never from <code>service</code> or <code>router</code>.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/users/repository.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.db import Database
+
+class UserRepository:
+    def __init__(self, db: Database):
+        self.db = db
+        self.db.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id    INTEGER PRIMARY KEY AUTOINCREMENT,
+                name  TEXT    NOT NULL,
+                email TEXT    NOT NULL UNIQUE
+            )
+        """)
+
+    def get_by_id(self, user_id: int) -> dict | None:
+        return self.db.query(
+            "SELECT * FROM users WHERE id = ?", (user_id,)
+        )
+
+    def get_all(self) -> list:
+        return self.db.query_all("SELECT * FROM users")
+
+    def create(self, name: str, email: str) -> dict:
+        self.db.execute(
+            "INSERT INTO users (name, email) VALUES (?, ?)", (name, email)
+        )
+        return self.get_by_id(self.db.last_insert_id())</code></pre>
+        </div>
+      </section>
+
+      <section id="service">
+        <h3>Step 2 · Service <a href="#service" class="anchor-link">#</a></h3>
+        <p>The service layer contains all business logic. It may import from <code>repository</code> and <code>schemas</code>. <code>UserRepository</code> is injected automatically — no manual wiring.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/users/service.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import background_task
+from pillar.exceptions import NotFoundError, ConflictError
+from .repository import UserRepository
+
+class UserService:
+    def __init__(self, repo: UserRepository):   # auto-injected
+        self.repo = repo
+
+    def get_user(self, user_id: int) -> dict:
+        user = self.repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundError(f"User {user_id} not found")
+        return {**user, "status": "active"}
+
+    def list_users(self) -> list:
+        return [{**u, "status": "active"} for u in self.repo.get_all()]
+
+    def create_user(self, name: str, email: str) -> dict:
+        user = self.repo.create(name, email)
+        self.send_welcome_email(user["email"])   # enqueued, non-blocking
+        return {**user, "status": "active"}
+
+    @background_task(retries=3)
+    def send_welcome_email(self, email: str):
+        # Runs in the Pillar Queue — no Celery, no Redis required
+        print(f"[queue] Sending welcome email → {email}")</code></pre>
+        </div>
+      </section>
+
+      <section id="schemas">
+        <h3>Step 3 · Schemas <a href="#schemas" class="anchor-link">#</a></h3>
+        <p>Pydantic models that can be shared across all layers.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/users/schemas.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pydantic import BaseModel, EmailStr, Field
+
+class UserCreate(BaseModel):
+    name:  str = Field(min_length=1, max_length=100)
+    email: str
+
+class UserResponse(BaseModel):
+    id:     int
+    name:   str
+    email:  str
+    status: str</code></pre>
+        </div>
+      </section>
+
+      <section id="router">
+        <h3>Step 4 · Router <a href="#router" class="anchor-link">#</a></h3>
+        <p>HTTP definitions only. May import from <code>service</code> and <code>schemas</code> — never from <code>repository</code> directly. <code>UserService</code> is injected automatically.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">domains/users/router.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Router
+from .schemas import UserCreate, UserResponse
+from .service import UserService
+
+router = Router(prefix="/users", tags=["Users"])
+
+@router.get("/", response_model=list[UserResponse], summary="List all users")
+async def list_users(service: UserService):
+    return service.list_users()
+
+@router.get("/{user_id}", response_model=UserResponse, summary="Get a user")
+async def get_user(user_id: int, service: UserService):
+    return service.get_user(user_id)
+
+@router.post("/", status_code=201, response_model=UserResponse,
+             summary="Create a user")
+async def create_user(data: UserCreate, service: UserService):
+    return service.create_user(data.name, data.email)
+
+@router.delete("/{user_id}", status_code=204, summary="Delete a user")
+async def delete_user(user_id: int, service: UserService):
+    service.delete_user(user_id)</code></pre>
+        </div>
+      </section>
+
+      <section id="entrypoint">
+        <h3>Step 5 · Entry Point <a href="#entrypoint" class="anchor-link">#</a></h3>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">main.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import Pillar
+from domains.users.router import router as users_router
+
+app = Pillar(
+    title="My API",
+    version="1.0.0",
+    description="Built with Pillar — Production-Grade Python Backend",
+)
+
+app.include_router(users_router)
+
+# Run: pillar run main:app --reload</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="run">
+        <h2>Run the App <a href="#run" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash"># Development (hot-reload)
+pillar run main:app --reload
+
+# Production (multi-process)
+pillar run main:app --workers 4 --host 0.0.0.0 --port 8000</code></pre>
+        </div>
+
+        <p>You should see output like:</p>
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">output</span><span class="code-lang">text</span></div>
+          <pre><code class="language-bash">Pillar starting on http://0.0.0.0:8000
+   app     : main:app
+   reload  : True
+   workers : 1
+INFO:     pillar - Pillar 1.0.0 ready — 4 route(s) [rust engine]
+INFO:     pillar - Pillar is ready to serve requests</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="explore">
+        <h2>Explore the Built-in Endpoints <a href="#explore" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>URL</th><th>What you get</th></tr></thead>
+            <tbody>
+              <tr><td><code>http://localhost:8000/docs</code></td><td>Swagger UI — try your endpoints interactively</td></tr>
+              <tr><td><code>http://localhost:8000/redoc</code></td><td>ReDoc — clean reference docs</td></tr>
+              <tr><td><code>http://localhost:8000/guide</code></td><td>Interactive HTML route guide</td></tr>
+              <tr><td><code>http://localhost:8000/health</code></td><td>Liveness probe (JSON)</td></tr>
+              <tr><td><code>http://localhost:8000/ready</code></td><td>Readiness probe (503 until queue starts)</td></tr>
+              <tr><td><code>http://localhost:8000/metrics</code></td><td>Request metrics (JSON or Prometheus)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="adm tip">
+          <div class="adm-head">💡 Try your first request</div>
+          <div class="adm-body">
+            <div class="code-block" style="margin:0;">
+              <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+              <pre><code class="language-bash">curl -X POST http://localhost:8000/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice", "email": "alice@example.com"}'
+# {"id":1,"name":"Alice","email":"alice@example.com","status":"active"}</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="project-structure">
+        <h2>Project Structure <a href="#project-structure" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">directory layout</span><span class="code-lang">text</span></div>
+          <pre><code class="language-bash">myapp/
+├── main.py                      # 3-line entry point
+├── pillar.toml                  # framework config
+├── requirements.txt
+│
+├── domains/                     # all business logic lives here
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── schemas.py           # Pydantic models (shared)
+│   │   ├── repository.py        # DB queries ONLY
+│   │   ├── service.py           # business logic ONLY
+│   │   └── router.py            # HTTP definitions ONLY
+│   │
+│   └── orders/                  # add more domains freely
+│       ├── schemas.py
+│       ├── repository.py
+│       ├── service.py
+│       └── router.py
+│
+├── core/                        # cross-cutting infrastructure
+│   ├── security.py              # JWT / auth helpers
+│   └── events.py                # startup / shutdown hooks
+│
+└── tests/
+    ├── conftest.py
+    ├── test_users.py
+    └── test_orders.py</code></pre>
+        </div>
+
+        <div class="adm warn">
+          <div class="adm-head">⚠ Architecture is enforced</div>
+          <div class="adm-body">
+            <p>At startup, Pillar walks <code>domains/</code> and parses every layer file with Python's AST. If <code>router.py</code> imports from <code>repository.py</code>, the server raises <code>ArchitectureViolationError</code> and refuses to start.</p>
+            <p>See the <a href="advanced.html#ddd">DDD Layer Enforcer</a> section for the full import matrix.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="configuration">
+        <h2>Configuration <a href="#configuration" class="anchor-link">#</a></h2>
+
+        <p>Pillar reads <code>pillar.toml</code> from the working directory on startup. Every key has a sensible default — only add what you need to change.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[app]
+title   = "My API"
+version = "1.0.0"
+debug   = false         # set true for stack traces in 500 responses
+host    = "0.0.0.0"
+port    = 8000
+
+[database]
+url       = "sqlite:///./app.db"
+pool_size = 10
+
+[queue]
+driver        = "sqlite"    # "sqlite" | "redis" | "postgres"
+db_path       = "pillar_queue.db"
+workers       = 4
+poll_interval = 0.5
+
+[docs]
+enabled = true              # false disables /docs, /redoc, /guide
+
+[cors]
+enabled       = true
+allow_origins = ["*"]       # tighten for production</code></pre>
+        </div>
+
+        <h3>Environment variable overrides</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variable</th><th>Config key</th></tr></thead>
+            <tbody>
+              <tr><td><code>DATABASE_URL</code></td><td><code>[database] url</code></td></tr>
+              <tr><td><code>DEBUG</code></td><td><code>[app] debug</code> — 1 / true</td></tr>
+              <tr><td><code>HOST</code></td><td><code>[app] host</code></td></tr>
+              <tr><td><code>PORT</code></td><td><code>[app] port</code></td></tr>
+              <tr><td><code>QUEUE_DRIVER</code></td><td><code>[queue] driver</code></td></tr>
+              <tr><td><code>REDIS_URL</code></td><td><code>[queue] redis_url</code></td></tr>
+              <tr><td><code>PILLAR_DOCS_ENABLED</code></td><td><code>[docs] enabled</code> — 0 / false</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <section id="next">
+        <h2>What's Next <a href="#next" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Topic</th><th>Where to go</th></tr></thead>
+            <tbody>
+              <tr><td>Routing, DI, request bodies, error handling</td><td><a href="cookbook.html">📖 Cookbook</a></td></tr>
+              <tr><td>Background tasks, database, WebSockets, DDD</td><td><a href="advanced.html">⚡ Advanced</a></td></tr>
+              <tr><td>CLI commands, full config table, Docker</td><td><a href="reference.html">📋 Reference</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /.p-content-inner -->
+
+    <!-- Footer -->
+    <footer class="p-footer">
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="cookbook.html">Cookbook</a>
+        <a href="advanced.html">Advanced</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Donate</a>
+      </div>
+      <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener" class="footer-bmc">☕ Buy Me a Coffee</a>
+      <p>🏛️ <strong style="color:rgba(255,255,255,.7)">Pillar Framework</strong> — Production-Grade Python Backend</p>
+      <p class="footer-copy">© 2025 Ramesh Kannan · MIT License</p>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/toml.min.js"></script>
+<script src="assets/pillar.js"></script>
+</body>
+</html>

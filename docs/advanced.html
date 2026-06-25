@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced — Pillar Framework</title>
+  <meta name="description" content="Advanced Pillar patterns: background task queue, database layer, DDD architecture enforcement, the Smart Bridge, Prometheus metrics, and OpenAPI customisation." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://zecrari.github.io/pillar/advanced.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="assets/pillar.css" />
+
+  <style>
+    /* Architecture layer diagram */
+    .layer-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .layer-card  { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .lc-head     { padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--border); }
+    .lc-body     { padding: 10px 14px; font-size: 13px; color: var(--text-muted); }
+    .lc-body .ok { color: #4caf50; font-weight: 500; }
+    .lc-body .no { color: #f44336; font-weight: 500; }
+    .lc-router   .lc-head { background: #e8f5e9; color: #2e7d32; }
+    .lc-service  .lc-head { background: #e3f2fd; color: #1565c0; }
+    .lc-repo     .lc-head { background: #fce4ec; color: #880e4f; }
+    [data-theme="dark"] .lc-router  .lc-head { background:rgba(46,125,50,.2);  color:#81c784; }
+    [data-theme="dark"] .lc-service .lc-head { background:rgba(21,101,192,.2); color:#64b5f6; }
+    [data-theme="dark"] .lc-repo    .lc-head { background:rgba(136,14,79,.2);  color:#f48fb1; }
+    @media(max-width:700px){ .layer-cards{ grid-template-columns:1fr; } }
+
+    /* Architecture diagram */
+    .arch-box {
+      background: #0d1117; border: 1px solid rgba(255,255,255,.08);
+      border-radius: 6px; padding: 20px; font-family: var(--mono);
+      font-size: 13px; color: #8892a4; line-height: 1.9; margin: 16px 0;
+    }
+    .arch-inner { border: 1px solid rgba(255,255,255,.1); border-radius: 4px; padding: 12px 16px; margin: 8px 0; }
+    .arch-rust  { border-color: rgba(255,152,0,.4); }
+    .arch-py    { border-color: rgba(0,150,136,.4); }
+    .arch-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+    .arch-rust .arch-title { color: #ffb74d; }
+    .arch-py   .arch-title { color: #4db6ac; }
+    .arch-arrow { text-align: center; color: #30363d; font-size: 18px; margin: 4px 0; }
+  </style>
+</head>
+<body>
+
+<nav class="p-nav">
+  <button class="nav-hamburger" id="navHamburger" aria-label="Toggle sidebar">☰</button>
+  <a class="nav-brand" href="index.html"><span class="nav-brand-icon">🏛️</span>Pillar<span class="nav-brand-ver">v0.1</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="getting-started.html">Getting Started</a>
+    <a href="cookbook.html">Cookbook</a>
+    <a href="advanced.html" class="nav-active">Advanced</a>
+    <a href="reference.html">Reference</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="https://github.com/Zecrari/pillar" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-bmc" href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Support</a>
+    <button class="nav-btn" id="themeToggle">🌙</button>
+  </div>
+</nav>
+
+<div class="p-layout">
+  <aside class="p-sidebar" id="pSidebar">
+    <div class="sb-group">Background Tasks</div>
+    <a href="#queue-overview">Queue Overview</a>
+    <a href="#background-task">@background_task</a>
+    <a href="#module-tasks">Module-level Tasks</a>
+    <a href="#queue-testing">Testing Tasks</a>
+    <a href="#queue-drivers">Queue Drivers</a>
+
+    <div class="sb-group">Database</div>
+    <a href="#db-overview">Overview</a>
+    <a href="#db-api">Database API</a>
+    <a href="#db-patterns">Repository Patterns</a>
+    <a href="#db-transactions">Transactions</a>
+    <a href="#db-migrations">Migrations</a>
+
+    <div class="sb-group">DDD Enforcer</div>
+    <a href="#ddd-overview">How It Works</a>
+    <a href="#ddd-matrix">Import Matrix</a>
+    <a href="#ddd-violations">Violation Errors</a>
+    <a href="#ddd-bypass">Bypass (Testing)</a>
+
+    <div class="sb-group">Smart Bridge</div>
+    <a href="#bridge-overview">Overview</a>
+    <a href="#bridge-patterns">Patterns</a>
+
+    <div class="sb-group">Metrics & Observability</div>
+    <a href="#metrics-endpoints">Metrics Endpoints</a>
+    <a href="#metrics-prometheus">Prometheus</a>
+    <a href="#telemetry">OpenTelemetry</a>
+
+    <div class="sb-group">OpenAPI</div>
+    <a href="#openapi-customize">Customise Docs</a>
+    <a href="#openapi-hide">Hide Routes</a>
+
+    <div class="sb-group">Pages</div>
+    <a href="index.html"           class="sb-page">🏠 Home</a>
+    <a href="getting-started.html" class="sb-page">🚀 Getting Started</a>
+    <a href="cookbook.html"        class="sb-page">📖 Cookbook</a>
+    <a href="advanced.html"        class="sb-page active">⚡ Advanced</a>
+    <a href="reference.html"       class="sb-page">📋 Reference</a>
+  </aside>
+
+  <main class="p-content">
+    <div class="p-content-inner">
+
+      <h1>⚡ Advanced Features</h1>
+      <p>Deep-dives into Pillar's most powerful features: the embedded task queue, database layer, DDD enforcement, the Smart Bridge, and production observability.</p>
+
+      <!-- ════════ BACKGROUND TASKS ════════ -->
+      <section id="queue-overview">
+        <h2>Background Task Queue <a href="#queue-overview" class="anchor-link">#</a></h2>
+
+        <p>Pillar ships with a <strong>persistent task queue backed by the Rust engine</strong>. No Redis. No Celery. No separate worker process. Tasks are written to SQLite WAL mode and survive server restarts.</p>
+
+        <div class="arch-box">
+          <div style="text-align:center;color:#4db6ac;font-weight:700;margin-bottom:10px;">Pillar Queue Architecture</div>
+          <div class="arch-inner arch-rust">
+            <div class="arch-title">🦀 PillarQueue (Rust)</div>
+            <div>SQLite WAL · uuid task IDs · chrono timestamps · rusqlite-bundled</div>
+          </div>
+          <div class="arch-arrow">↕ PyO3 FFI</div>
+          <div class="arch-inner arch-py">
+            <div class="arch-title">🐍 TaskStorage + TaskWorker (Python)</div>
+            <div>serialise calls · asyncio poller · thread-pool executor · retry logic</div>
+          </div>
+        </div>
+
+        <div class="adm tip">
+          <div class="adm-head">💡 When to use Pillar Queue vs Redis</div>
+          <div class="adm-body">
+            <p>Start with the SQLite driver (default). Upgrade to Redis when you need: horizontal scaling across multiple processes, sub-millisecond enqueue latency, or millions of tasks per hour. Change one line in <code>pillar.toml</code> — your Python code stays identical.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="background-task">
+        <h2>@background_task Decorator <a href="#background-task" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar import background_task
+
+class EmailService:
+    @background_task(retries=3)
+    def send_welcome(self, to: str, name: str):
+        """
+        Calling self.send_welcome(email, name) does NOT run this code now.
+        It serialises the call and returns a task_id string.
+        The TaskWorker picks it up and runs it asynchronously.
+        On failure it retries up to 3 times before marking as failed.
+        """
+        smtp.send(
+            to=to,
+            subject=f"Welcome, {name}!",
+            body=render_template("welcome.html", name=name),
+        )
+
+    @background_task(retries=5)
+    def send_invoice(self, order_id: int):
+        order = order_repo.get(order_id)
+        pdf   = pdf_generator.render(order)
+        smtp.send_pdf(to=order["email"], pdf=pdf)
+
+    @background_task(retries=0)
+    def log_signup(self, user_id: int, ip: str):
+        analytics.track("signup", user_id=user_id, ip=ip)</code></pre>
+        </div>
+
+        <h3>What happens when you call a queued function</h3>
+        <ol>
+          <li>The call is <strong>serialised</strong> (function path + args + kwargs) into the SQLite queue</li>
+          <li>The function returns a <strong>task ID string</strong> immediately — no blocking</li>
+          <li>The background <code>TaskWorker</code> polls the queue and executes the task in a thread pool</li>
+          <li>On exception, the task is <strong>retried</strong> up to <code>retries</code> times</li>
+          <li>The queue persists to disk — tasks survive server restarts</li>
+        </ol>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">decorator parameters</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@background_task(
+    retries=3,      # int  — retry on failure; 0 = no retry
+    cron=None,      # str  — future: "*/5 * * * *" for scheduled tasks
+)</code></pre>
+        </div>
+      </section>
+
+      <section id="module-tasks">
+        <h2>Module-level Tasks <a href="#module-tasks" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">core/tasks.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">import shutil
+from pillar import background_task
+
+@background_task(retries=1)
+def purge_tmp_uploads(older_than_hours: int = 24):
+    import time, os, pathlib
+    cutoff = time.time() - older_than_hours * 3600
+    for f in pathlib.Path("/tmp/uploads").glob("*"):
+        if f.stat().st_mtime < cutoff:
+            f.unlink(missing_ok=True)
+
+@background_task(retries=2)
+def sync_to_s3(local_path: str, s3_key: str):
+    import boto3
+    s3 = boto3.client("s3")
+    s3.upload_file(local_path, "my-bucket", s3_key)
+
+# Call anywhere — returns task_id
+task_id = purge_tmp_uploads(older_than_hours=48)
+print(f"Enqueued: {task_id}")</code></pre>
+        </div>
+      </section>
+
+      <section id="queue-testing">
+        <h2>Testing Background Tasks <a href="#queue-testing" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">tests/test_email.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from unittest.mock import patch, MagicMock
+
+def test_welcome_email_is_queued(email_service):
+    """Assert the task is enqueued (not executed) during the request."""
+    with patch.object(email_service, "send_welcome") as mock_queue:
+        email_service.on_user_created(user_id=1, email="a@b.com")
+        mock_queue.assert_called_once_with("a@b.com", "Alice")
+
+def test_welcome_email_logic(email_service):
+    """Test the actual email logic by bypassing the queue."""
+    with patch("smtp.send") as mock_smtp:
+        # Call _original_func directly — skips the queue entirely
+        email_service.send_welcome._original_func(
+            email_service, to="a@b.com", name="Alice"
+        )
+        mock_smtp.assert_called_once()
+        call_kwargs = mock_smtp.call_args.kwargs
+        assert call_kwargs["to"] == "a@b.com"
+        assert "Welcome" in call_kwargs["subject"]</code></pre>
+        </div>
+
+        <div class="adm info">
+          <div class="adm-head">ℹ _original_func</div>
+          <div class="adm-body"><p>Every <code>@background_task</code>-decorated function stores a reference to the original unwrapped function at <code>func._original_func</code>. Use this in tests to call the logic directly without going through the queue.</p></div>
+        </div>
+      </section>
+
+      <section id="queue-drivers">
+        <h2>Queue Drivers <a href="#queue-drivers" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Driver</th><th>Best for</th><th>Config</th></tr></thead>
+            <tbody>
+              <tr><td><code>sqlite</code> (default)</td><td>Single-process apps, development, small workloads</td><td><code>db_path = "pillar_queue.db"</code></td></tr>
+              <tr><td><code>redis</code></td><td>Multi-process, high throughput, horizontal scaling</td><td><code>redis_url = "redis://localhost:6379/0"</code></td></tr>
+              <tr><td><code>postgres</code></td><td>Already using Postgres, want queue in same DB</td><td><code>postgres_url = "postgresql://..."</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml — switch to Redis</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[queue]
+driver    = "redis"
+redis_url = "redis://localhost:6379/0"
+workers   = 8</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ DATABASE ════════ -->
+      <section id="db-overview">
+        <h2>Database Layer <a href="#db-overview" class="anchor-link">#</a></h2>
+        <p>Pillar provides a <code>Database</code> class with thread-local SQLite connections. It's registered as a framework singleton and injected anywhere you type-hint <code>db: Database</code>. WAL mode and foreign key enforcement are on by default.</p>
+      </section>
+
+      <section id="db-api">
+        <h2>Database API <a href="#db-api" class="anchor-link">#</a></h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Method</th><th>Returns</th><th>Use for</th></tr></thead>
+            <tbody>
+              <tr><td><code>db.query(sql, params)</code></td><td><code>dict | None</code></td><td>Single row lookup</td></tr>
+              <tr><td><code>db.query_all(sql, params)</code></td><td><code>list[dict]</code></td><td>Multiple rows</td></tr>
+              <tr><td><code>db.execute(sql, params)</code></td><td><code>int</code> (rowcount)</td><td>INSERT / UPDATE / DELETE</td></tr>
+              <tr><td><code>db.execute_returning(sql, params)</code></td><td><code>dict | None</code></td><td>Write and return the row</td></tr>
+              <tr><td><code>db.last_insert_id()</code></td><td><code>int | None</code></td><td>Rowid after INSERT</td></tr>
+              <tr><td><code>db.close()</code></td><td>—</td><td>Close thread's connection</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.db import Database
+
+class ArticleRepository:
+    def __init__(self, db: Database):
+        self.db = db
+        self.db.execute("""
+            CREATE TABLE IF NOT EXISTS articles (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                title      TEXT    NOT NULL,
+                body       TEXT    NOT NULL,
+                author_id  INTEGER NOT NULL,
+                published  INTEGER DEFAULT 0,
+                created_at TEXT    DEFAULT (datetime('now'))
+            )
+        """)
+
+    def get(self, article_id: int) -> dict | None:
+        return self.db.query(
+            "SELECT * FROM articles WHERE id = ?", (article_id,)
+        )
+
+    def list_published(self, limit: int = 20, offset: int = 0) -> list:
+        return self.db.query_all(
+            "SELECT * FROM articles WHERE published = 1 "
+            "ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            (limit, offset)
+        )
+
+    def create(self, title: str, body: str, author_id: int) -> dict:
+        self.db.execute(
+            "INSERT INTO articles (title, body, author_id) VALUES (?,?,?)",
+            (title, body, author_id)
+        )
+        return self.get(self.db.last_insert_id())
+
+    def publish(self, article_id: int) -> int:
+        return self.db.execute(
+            "UPDATE articles SET published = 1 WHERE id = ?", (article_id,)
+        )</code></pre>
+        </div>
+      </section>
+
+      <section id="db-patterns">
+        <h2>Repository Patterns <a href="#db-patterns" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">search + filter pattern</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">def search(
+    self,
+    query:     str     = "",
+    category:  str     = "",
+    min_price: float   = 0,
+    max_price: float   = float("inf"),
+    limit:     int     = 20,
+    offset:    int     = 0,
+) -> list:
+    conditions = ["1=1"]
+    params: list = []
+
+    if query:
+        conditions.append("name LIKE ?")
+        params.append(f"%{query}%")
+    if category:
+        conditions.append("category = ?")
+        params.append(category)
+    if min_price > 0:
+        conditions.append("price >= ?")
+        params.append(min_price)
+    if max_price < float("inf"):
+        conditions.append("price <= ?")
+        params.append(max_price)
+
+    params.extend([limit, offset])
+    return self.db.query_all(
+        f"SELECT * FROM products WHERE {' AND '.join(conditions)} "
+        f"ORDER BY name LIMIT ? OFFSET ?",
+        tuple(params)
+    )</code></pre>
+        </div>
+      </section>
+
+      <section id="db-transactions">
+        <h2>Transactions <a href="#db-transactions" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from pillar.db import Database
+
+class OrderRepository:
+    def __init__(self, db: Database): self.db = db
+
+    def create_with_items(self, order_data: dict, items: list) -> dict:
+        conn = self.db._conn()
+        try:
+            conn.execute("BEGIN")
+            conn.execute(
+                "INSERT INTO orders (user_id, total) VALUES (?,?)",
+                (order_data["user_id"], order_data["total"])
+            )
+            order_id = conn.execute(
+                "SELECT last_insert_rowid()"
+            ).fetchone()[0]
+
+            for item in items:
+                conn.execute(
+                    "INSERT INTO order_items (order_id, product_id, qty, price)"
+                    " VALUES (?,?,?,?)",
+                    (order_id, item["product_id"], item["qty"], item["price"])
+                )
+                conn.execute(
+                    "UPDATE products SET stock = stock - ? WHERE id = ?",
+                    (item["qty"], item["product_id"])
+                )
+
+            conn.execute("COMMIT")
+            return self.get(order_id)
+        except Exception:
+            conn.execute("ROLLBACK")
+            raise</code></pre>
+        </div>
+      </section>
+
+      <section id="db-migrations">
+        <h2>Schema Migrations <a href="#db-migrations" class="anchor-link">#</a></h2>
+        <p>Pillar has no built-in migration tool in Phase 1. Two recommended approaches:</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">option A — CREATE TABLE IF NOT EXISTS (simple)</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">class UserRepository:
+    def __init__(self, db: Database):
+        self.db = db
+        self._migrate()
+
+    def _migrate(self):
+        self.db.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id      INTEGER PRIMARY KEY AUTOINCREMENT,
+                name    TEXT NOT NULL,
+                email   TEXT NOT NULL UNIQUE,
+                role    TEXT NOT NULL DEFAULT 'user'   -- added in v2
+            )
+        """)</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">option B — versioned migrations (recommended for prod)</span><span class="code-lang">python</span></div>
+          <pre><code class="language-bash"># Use Alembic (SQLAlchemy-independent migration tool)
+pip install alembic
+alembic init migrations
+# Edit migrations/env.py to use your SQLite URL</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ DDD ════════ -->
+      <section id="ddd-overview">
+        <h2>DDD Layer Enforcer <a href="#ddd-overview" class="anchor-link">#</a></h2>
+
+        <p>At startup, Pillar uses Python's <code>ast</code> module to parse every <code>router.py</code>, <code>service.py</code>, and <code>repository.py</code> inside <code>domains/</code>. If any file imports from a forbidden layer, <code>ArchitectureViolationError</code> is raised before the first request.</p>
+
+        <p>This check runs once at startup — zero runtime overhead.</p>
+      </section>
+
+      <section id="ddd-matrix">
+        <h2>Import Matrix <a href="#ddd-matrix" class="anchor-link">#</a></h2>
+
+        <div class="layer-cards">
+          <div class="layer-card lc-repo">
+            <div class="lc-head">repository.py</div>
+            <div class="lc-body">
+              <div class="ok">✓ schemas</div>
+              <div class="no">✗ service</div>
+              <div class="no">✗ router</div>
+            </div>
+          </div>
+          <div class="layer-card lc-service">
+            <div class="lc-head">service.py</div>
+            <div class="lc-body">
+              <div class="ok">✓ repository</div>
+              <div class="ok">✓ schemas</div>
+              <div class="no">✗ router</div>
+            </div>
+          </div>
+          <div class="layer-card lc-router">
+            <div class="lc-head">router.py</div>
+            <div class="lc-body">
+              <div class="ok">✓ service</div>
+              <div class="ok">✓ schemas</div>
+              <div class="no">✗ repository</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm info">
+          <div class="adm-head">ℹ Only domains/ is checked</div>
+          <div class="adm-body"><p>Files in <code>core/</code>, <code>tests/</code>, or the project root are not subject to enforcement. If the <code>domains/</code> directory does not exist, the enforcer is skipped entirely.</p></div>
+        </div>
+      </section>
+
+      <section id="ddd-violations">
+        <h2>Violation Error Output <a href="#ddd-violations" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">startup error example</span><span class="code-lang">text</span></div>
+          <pre><code class="language-bash">pillar.exceptions.ArchitectureViolationError:
+
+  File   : domains/orders/router.py
+  Layer  : router.py
+  Imports: 'domains.orders.repository'
+  Problem: 'router' must not import from 'repository'.
+  Allowed: ['schemas', 'service']
+
+  Fix: move the logic that needs 'repository' into a
+  layer that is allowed to use it.</code></pre>
+        </div>
+      </section>
+
+      <section id="ddd-bypass">
+        <h2>Bypass in Tests <a href="#ddd-bypass" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">tests/conftest.py</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">from unittest.mock import patch
+import pytest
+
+@pytest.fixture(autouse=True)
+def skip_architecture_check():
+    """Disable the DDD enforcer in tests (it checks cwd, not test dir)."""
+    with patch("pillar.architecture.enforcer.ArchitectureEnforcer.validate"):
+        yield</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ SMART BRIDGE ════════ -->
+      <section id="bridge-overview">
+        <h2>The Smart Bridge <a href="#bridge-overview" class="anchor-link">#</a></h2>
+
+        <p>Pillar's handler invocation layer (the <em>Smart Bridge</em>) inspects your function at call time using <code>inspect.iscoroutinefunction()</code>:</p>
+
+        <ul>
+          <li><strong>async function</strong> → called directly on the event loop with <code>await</code></li>
+          <li><strong>sync function</strong> → dispatched to a thread pool via <code>asyncio.run_in_executor(None, ...)</code></li>
+        </ul>
+
+        <p>This means your sync database queries never block the event loop, and your async I/O calls never create unnecessary threads. You just write Python — the framework handles execution context.</p>
+      </section>
+
+      <section id="bridge-patterns">
+        <h2>Smart Bridge Patterns <a href="#bridge-patterns" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python — both work</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python"># Pattern 1: Async handler + sync service + sync repository
+# (most common — sync DB code runs in thread pool automatically)
+@router.get("/{id}")
+async def get_product(id: int, svc: ProductService):
+    return svc.get(id)   # svc.get() is sync → thread pool
+
+class ProductService:
+    def get(self, id: int) -> dict:          # sync
+        return self.repo.get(id)             # sync
+
+class ProductRepository:
+    def get(self, id: int) -> dict | None:   # sync
+        return self.db.query("SELECT …", (id,))
+
+# ---
+
+# Pattern 2: Sync handler (entire chain runs in thread pool)
+@router.get("/report")
+def generate_report(svc: ReportService):    # sync handler
+    return svc.build_heavy_report()          # runs in thread pool
+
+# ---
+
+# Pattern 3: Async handler + async service (LLM calls etc.)
+@router.post("/chat")
+async def chat(data: ChatRequest, svc: AIService):
+    return await svc.stream_completion(data.prompt)  # async LLM call
+
+class AIService:
+    async def stream_completion(self, prompt: str) -> dict:
+        response = await openai_client.chat(prompt)
+        return {"reply": response.content}</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ METRICS ════════ -->
+      <section id="metrics-endpoints">
+        <h2>Metrics Endpoints <a href="#metrics-endpoints" class="anchor-link">#</a></h2>
+
+        <p>Pillar records <strong>request count, error count, and average latency</strong> per route. Zero configuration — it's on by default.</p>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">curl http://localhost:8000/metrics | jq
+# {
+#   "GET /users/":         {"count": 142, "errors": 0, "avg_ms": 2.1},
+#   "POST /users/":        {"count": 37,  "errors": 2, "avg_ms": 8.4},
+#   "GET /products/":      {"count": 891, "errors": 0, "avg_ms": 1.8}
+# }</code></pre>
+        </div>
+      </section>
+
+      <section id="metrics-prometheus">
+        <h2>Prometheus Format <a href="#metrics-prometheus" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">terminal</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">curl "http://localhost:8000/metrics?format=prometheus"
+# # HELP pillar_requests_total Total HTTP requests
+# # TYPE pillar_requests_total counter
+# pillar_requests_total{route="GET /users/",status="2xx"} 142
+# pillar_requests_total{route="POST /users/",status="4xx"} 2
+# # HELP pillar_request_duration_ms Average request duration in ms
+# pillar_request_duration_ms{route="GET /users/"} 2.1</code></pre>
+        </div>
+
+        <h3>Prometheus scrape config</h3>
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">prometheus.yml</span><span class="code-lang">bash</span></div>
+          <pre><code class="language-bash">scrape_configs:
+  - job_name: 'pillar-app'
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['localhost:8000']</code></pre>
+        </div>
+      </section>
+
+      <section id="telemetry">
+        <h2>OpenTelemetry (Phase 2) <a href="#telemetry" class="anchor-link">#</a></h2>
+
+        <div class="adm info">
+          <div class="adm-head">ℹ Coming in Phase 2</div>
+          <div class="adm-body"><p>Full OpenTelemetry tracing with automatic span creation for HTTP requests, DB queries, and queue tasks is planned for Phase 2. Enable it today by configuring the <code>[telemetry]</code> section in <code>pillar.toml</code> — the hooks are wired, the exporter integration is next.</p></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[telemetry]
+enabled      = false       # flip to true in Phase 2
+exporter     = "jaeger"    # "jaeger" | "datadog" | "grafana"
+endpoint     = "http://localhost:14268/api/traces"
+service_name = "my-pillar-app"</code></pre>
+        </div>
+      </section>
+
+      <!-- ════════ OPENAPI ════════ -->
+      <section id="openapi-customize">
+        <h2>Customise API Docs <a href="#openapi-customize" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">pillar.toml</span><span class="code-lang">toml</span></div>
+          <pre><code class="language-toml">[docs]
+enabled      = true
+swagger_url  = "/docs"
+redoc_url    = "/redoc"
+openapi_url  = "/openapi.json"
+guide_url    = "/guide"
+title        = "My API Docs"   # overrides app.title in docs only
+description  = "Custom description shown in Swagger UI"</code></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">rich route documentation</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python">@router.post(
+    "/",
+    status_code=201,
+    summary="Create a product",
+    description="""
+    Creates a new product in the catalog.
+
+    **Rules:**
+    - SKU must be globally unique
+    - Price must be positive
+    - Category must be a known category slug
+
+    Returns the created product with its assigned ID.
+    """,
+    response_model=ProductResponse,
+)
+async def create_product(data: ProductCreate, svc: ProductService):
+    return svc.create(data)</code></pre>
+        </div>
+      </section>
+
+      <section id="openapi-hide">
+        <h2>Hide Internal Routes <a href="#openapi-hide" class="anchor-link">#</a></h2>
+
+        <div class="code-block">
+          <div class="code-toolbar"><span class="code-file">python</span><span class="code-lang">python</span></div>
+          <pre><code class="language-python"># Hidden from /docs but still works as an HTTP endpoint
+@router.get("/internal/debug-state", include_in_schema=False)
+async def debug_state(svc: DebugService):
+    return svc.dump_state()
+
+# Mark old endpoints as deprecated (shown in docs with strikethrough)
+@router.get("/v1/users", deprecated=True, summary="[Deprecated] Use /v2/users")
+async def list_users_v1(svc: UserService):
+    return svc.list_users()</code></pre>
+        </div>
+      </section>
+
+    </div><!-- /.p-content-inner -->
+
+    <footer class="p-footer">
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="cookbook.html">Cookbook</a>
+        <a href="advanced.html">Advanced</a>
+        <a href="reference.html">Reference</a>
+        <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener">☕ Donate</a>
+      </div>
+      <a href="https://buymeacoffee.com/rameshkannan.s" target="_blank" rel="noopener" class="footer-bmc">☕ Buy Me a Coffee</a>
+      <p>🏛️ <strong style="color:rgba(255,255,255,.7)">Pillar Framework</strong> — Production-Grade Python Backend</p>
+      <p class="footer-copy">© 2025 Ramesh Kannan · MIT License</p>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/toml.min.js"></script>
+<script src="assets/pillar.js"></script>
+</body>
+</html>
